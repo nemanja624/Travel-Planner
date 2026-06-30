@@ -10,3 +10,4 @@ TestResults/
 node_modules/
 dist/
 .env
+packages/
