@@ -20,7 +20,7 @@ public sealed class TripDbContext : DbContext
 
     public DbSet<ChecklistItem> ChecklistItems => Set<ChecklistItem>();
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreating(ModelBuilder modelBuilder) // kako ce podaci biti napravljeni u bazi 
     {
         ConfigureTrips(modelBuilder);
         ConfigureDestinations(modelBuilder);
