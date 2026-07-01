@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "Contracts\Cont
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TripService.Data", "TripService.Data\TripService.Data.csproj", "{60B6A621-1B05-41A8-916A-4F794519F126}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TripService.Core", "TripService.Core\TripService.Core.csproj", "{19A2CD78-6EB7-4407-B410-66827865A2B5}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
@@ -60,6 +62,14 @@ Global
 		{60B6A621-1B05-41A8-916A-4F794519F126}.Release|Any CPU.Build.0 = Release|Any CPU
 		{60B6A621-1B05-41A8-916A-4F794519F126}.Release|x64.ActiveCfg = Release|Any CPU
 		{60B6A621-1B05-41A8-916A-4F794519F126}.Release|x64.Build.0 = Release|Any CPU
+		{19A2CD78-6EB7-4407-B410-66827865A2B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19A2CD78-6EB7-4407-B410-66827865A2B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19A2CD78-6EB7-4407-B410-66827865A2B5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{19A2CD78-6EB7-4407-B410-66827865A2B5}.Debug|x64.Build.0 = Debug|Any CPU
+		{19A2CD78-6EB7-4407-B410-66827865A2B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19A2CD78-6EB7-4407-B410-66827865A2B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19A2CD78-6EB7-4407-B410-66827865A2B5}.Release|x64.ActiveCfg = Release|Any CPU
+		{19A2CD78-6EB7-4407-B410-66827865A2B5}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
