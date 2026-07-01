@@ -6,11 +6,14 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.ServiceFabric.Services.Communication.AspNetCore;
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
 using Microsoft.ServiceFabric.Data;
+using TripService.Core.Services;
+using TripService.Data;
 
 namespace Gateway
 {
@@ -47,6 +50,9 @@ namespace Gateway
                         builder.Services.AddControllers();
                         builder.Services.AddEndpointsApiExplorer();
                         builder.Services.AddSwaggerGen();
+                        builder.Services.AddDbContext<TripDbContext>(options =>
+                            options.UseSqlServer(builder.Configuration.GetConnectionString("TravelPlannerDatabase")));
+                        builder.Services.AddScoped<ITripPlannerService, TripPlannerService>();
                         var app = builder.Build();
                         if (app.Environment.IsDevelopment())
                         {

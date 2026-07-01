@@ -15,4 +15,10 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Contracts\Contracts.csproj" />
+    <ProjectReference Include="..\TripService.Core\TripService.Core.csproj" />
+    <ProjectReference Include="..\TripService.Data\TripService.Data.csproj" />
+  </ItemGroup>
+
 </Project>
