@@ -18,6 +18,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthService.Data", "AuthService.Data\AuthService.Data.csproj", "{8DC60644-F3F1-425E-9241-EB11F0D772C4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,6 +72,14 @@ Global
 		{19A2CD78-6EB7-4407-B410-66827865A2B5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{19A2CD78-6EB7-4407-B410-66827865A2B5}.Release|x64.ActiveCfg = Release|Any CPU
 		{19A2CD78-6EB7-4407-B410-66827865A2B5}.Release|x64.Build.0 = Release|Any CPU
+		{8DC60644-F3F1-425E-9241-EB11F0D772C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DC60644-F3F1-425E-9241-EB11F0D772C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DC60644-F3F1-425E-9241-EB11F0D772C4}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8DC60644-F3F1-425E-9241-EB11F0D772C4}.Debug|x64.Build.0 = Debug|Any CPU
+		{8DC60644-F3F1-425E-9241-EB11F0D772C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DC60644-F3F1-425E-9241-EB11F0D772C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8DC60644-F3F1-425E-9241-EB11F0D772C4}.Release|x64.ActiveCfg = Release|Any CPU
+		{8DC60644-F3F1-425E-9241-EB11F0D772C4}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
