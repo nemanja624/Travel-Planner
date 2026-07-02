@@ -16,6 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AuthService.Core\AuthService.Core.csproj" />
+    <ProjectReference Include="..\AuthService.Data\AuthService.Data.csproj" />
     <ProjectReference Include="..\Contracts\Contracts.csproj" />
     <ProjectReference Include="..\TripService.Core\TripService.Core.csproj" />
     <ProjectReference Include="..\TripService.Data\TripService.Data.csproj" />
