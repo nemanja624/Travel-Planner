@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using AuthService.Core.Security;
 using AuthService.Core.Services;
 using AuthService.Data;
+using Gateway.Security;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -57,11 +58,14 @@ namespace Gateway
                             options.UseSqlServer(builder.Configuration.GetConnectionString("TravelPlannerDatabase")));
                         builder.Services.AddDbContext<AuthDbContext>(options =>
                             options.UseSqlServer(builder.Configuration.GetConnectionString("AuthDatabase")));
+                        builder.Services.AddHttpContextAccessor();
                         builder.Services.AddScoped<ITripPlannerService, TripPlannerService>();
                         builder.Services.AddScoped<IPasswordHasher, BcryptPasswordHasher>();
                         builder.Services.AddSingleton(builder.Configuration.GetSection("Jwt").Get<JwtOptions>() ?? new JwtOptions());
                         builder.Services.AddScoped<IAccessTokenService, JwtAccessTokenService>();
+                        builder.Services.AddScoped<IAccessTokenValidator, JwtAccessTokenValidator>();
                         builder.Services.AddScoped<IAuthService, AuthService.Core.Services.AuthService>();
+                        builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
                         var app = builder.Build();
                         if (app.Environment.IsDevelopment())
                         {
