@@ -29,4 +29,6 @@ public sealed class Trip
     public ICollection<Expense> Expenses { get; set; } = new List<Expense>();
 
     public ICollection<ChecklistItem> ChecklistItems { get; set; } = new List<ChecklistItem>();
+
+    public ICollection<ShareLink> ShareLinks { get; set; } = new List<ShareLink>();
 }

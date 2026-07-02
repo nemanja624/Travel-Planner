@@ -20,6 +20,8 @@ public sealed class TripDbContext : DbContext
 
     public DbSet<ChecklistItem> ChecklistItems => Set<ChecklistItem>();
 
+    public DbSet<ShareLink> ShareLinks => Set<ShareLink>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder) // kako ce podaci biti napravljeni u bazi 
     {
         ConfigureTrips(modelBuilder);
@@ -27,6 +29,7 @@ public sealed class TripDbContext : DbContext
         ConfigureActivities(modelBuilder);
         ConfigureExpenses(modelBuilder);
         ConfigureChecklistItems(modelBuilder);
+        ConfigureShareLinks(modelBuilder);
     }
 
     private static void ConfigureTrips(ModelBuilder modelBuilder)
@@ -70,6 +73,11 @@ public sealed class TripDbContext : DbContext
             entity.HasMany(trip => trip.ChecklistItems)
                 .WithOne(item => item.Trip)
                 .HasForeignKey(item => item.TripId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasMany(trip => trip.ShareLinks)
+                .WithOne(link => link.Trip)
+                .HasForeignKey(link => link.TripId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }
@@ -163,6 +171,28 @@ public sealed class TripDbContext : DbContext
             entity.Property(item => item.Text)
                 .HasMaxLength(200)
                 .IsRequired();
+        });
+    }
+
+    private static void ConfigureShareLinks(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<ShareLink>(entity =>
+        {
+            entity.ToTable("ShareLinks");
+
+            entity.HasKey(link => link.Id);
+
+            entity.Property(link => link.AccessLevel)
+                .HasConversion<string>()
+                .HasMaxLength(30)
+                .IsRequired();
+
+            entity.Property(link => link.TokenHash)
+                .HasMaxLength(128)
+                .IsRequired();
+
+            entity.HasIndex(link => link.TokenHash)
+                .IsUnique();
         });
     }
 }
