@@ -23,21 +23,21 @@ public sealed class JwtAccessTokenService : IAccessTokenService
         var expiresAt = now.AddMinutes(options.ExpirationMinutes);
         var header = new Dictionary<string, object>
         {
-            ["alg"] = "HS256",
-            ["typ"] = "JWT"
+            ["alg"] = "HS256", // algoritam za potpisivanje tokena (HMAC-SHA256)
+            ["typ"] = "JWT" // tip tokena 
         };
         var payload = new Dictionary<string, object>
         {
-            ["iss"] = options.Issuer,
-            ["aud"] = options.Audience,
-            ["sub"] = user.Id.ToString(),
-            ["name"] = user.Name,
+            ["iss"] = options.Issuer, // issuer
+            ["aud"] = options.Audience, // audience
+            ["sub"] = user.Id.ToString(), // subject
+            ["name"] = user.Name, 
             ["email"] = user.Email,
             ["role"] = user.Role.ToString(),
-            ["jti"] = Guid.NewGuid().ToString(),
-            ["iat"] = now.ToUnixTimeSeconds(),
-            ["nbf"] = now.ToUnixTimeSeconds(),
-            ["exp"] = expiresAt.ToUnixTimeSeconds()
+            ["jti"] = Guid.NewGuid().ToString(), // jedinstveni id tokena
+            ["iat"] = now.ToUnixTimeSeconds(), // issued at
+            ["nbf"] = now.ToUnixTimeSeconds(), // not before
+            ["exp"] = expiresAt.ToUnixTimeSeconds() 
         };
 
         var encodedHeader = EncodeJson(header);
