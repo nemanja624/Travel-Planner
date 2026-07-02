@@ -65,6 +65,7 @@ namespace Gateway
                         builder.Services.AddScoped<IAccessTokenService, JwtAccessTokenService>();
                         builder.Services.AddScoped<IAccessTokenValidator, JwtAccessTokenValidator>();
                         builder.Services.AddScoped<IAuthService, AuthService.Core.Services.AuthService>();
+                        builder.Services.AddScoped<IAdminUserService, AdminUserService>();
                         builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
                         builder.Services.AddScoped<IRoleGuardService, RoleGuardService>();
                         var app = builder.Build();
