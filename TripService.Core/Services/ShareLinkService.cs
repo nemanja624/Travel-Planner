@@ -1,0 +1,128 @@
+using System.Security.Cryptography;
+using Contracts.Sharing;
+using Microsoft.EntityFrameworkCore;
+using TripService.Core.Common;
+using TripService.Data;
+using TripService.Data.Mapping;
+using TripService.Data.Models;
+
+namespace TripService.Core.Services;
+
+public sealed class ShareLinkService : IShareLinkService
+{
+    private const int TokenBytes = 32;
+    private readonly TripDbContext dbContext;
+    private readonly ShareLinkOptions options;
+
+    public ShareLinkService(TripDbContext dbContext, ShareLinkOptions options)
+    {
+        this.dbContext = dbContext;
+        this.options = options;
+    }
+
+    public async Task<ServiceResult<ShareLinkDto>> CreateShareLinkAsync(Guid ownerId, CreateShareLinkRequest request, CancellationToken cancellationToken = default)
+    {
+        if (request.ExpiresAtUtc <= DateTime.UtcNow)
+        {
+            return ServiceResult<ShareLinkDto>.Failure("Share link expiration must be in the future.");
+        }
+
+        var tripExists = await dbContext.Trips
+            .AnyAsync(trip => trip.Id == request.TripId && trip.OwnerId == ownerId, cancellationToken);
+
+        if (!tripExists)
+        {
+            return ServiceResult<ShareLinkDto>.Failure("Trip was not found.");
+        }
+
+        var token = GenerateToken();
+        var shareLink = new ShareLink
+        {
+            Id = Guid.NewGuid(),
+            TripId = request.TripId,
+            AccessLevel = request.AccessLevel,
+            TokenHash = HashToken(token),
+            ExpiresAtUtc = request.ExpiresAtUtc,
+            CreatedAtUtc = DateTime.UtcNow
+        };
+
+        await dbContext.ShareLinks.AddAsync(shareLink, cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        return ServiceResult<ShareLinkDto>.Success(ToDto(shareLink, token));
+    }
+
+    public async Task<ServiceResult<SharedTripDto>> GetSharedTripAsync(string token, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            return ServiceResult<SharedTripDto>.Failure("Share token is required.");
+        }
+
+        var tokenHash = HashToken(token.Trim());
+        var shareLink = await dbContext.ShareLinks
+            .AsNoTracking()
+            .Include(link => link.Trip)
+                .ThenInclude(trip => trip!.Destinations)
+            .Include(link => link.Trip)
+                .ThenInclude(trip => trip!.Activities)
+            .Include(link => link.Trip)
+                .ThenInclude(trip => trip!.Expenses)
+            .Include(link => link.Trip)
+                .ThenInclude(trip => trip!.ChecklistItems)
+            .FirstOrDefaultAsync(link => link.TokenHash == tokenHash, cancellationToken);
+
+        if (shareLink is null || shareLink.Trip is null || shareLink.RevokedAtUtc is not null)
+        {
+            return ServiceResult<SharedTripDto>.Failure("Share token is invalid.");
+        }
+
+        if (shareLink.ExpiresAtUtc <= DateTime.UtcNow)
+        {
+            return ServiceResult<SharedTripDto>.Failure("Share token has expired.");
+        }
+
+        return ServiceResult<SharedTripDto>.Success(new SharedTripDto(
+            shareLink.Trip.ToDto(),
+            shareLink.Trip.Destinations.OrderBy(destination => destination.ArrivalDate).Select(destination => destination.ToDto()).ToList(),
+            shareLink.Trip.Activities.OrderBy(activity => activity.Date).ThenBy(activity => activity.Time).Select(activity => activity.ToDto()).ToList(),
+            shareLink.Trip.Expenses.OrderBy(expense => expense.Date).Select(expense => expense.ToDto()).ToList(),
+            shareLink.Trip.ChecklistItems.OrderBy(item => item.IsCompleted).ThenBy(item => item.Text).Select(item => item.ToDto()).ToList(),
+            shareLink.AccessLevel));
+    }
+
+    private ShareLinkDto ToDto(ShareLink shareLink, string token)
+    {
+        return new ShareLinkDto(
+            shareLink.Id,
+            shareLink.TripId,
+            shareLink.AccessLevel,
+            token,
+            BuildShareUrl(token),
+            shareLink.ExpiresAtUtc,
+            shareLink.CreatedAtUtc);
+    }
+
+    private string BuildShareUrl(string token)
+    {
+        return $"{options.PublicBaseUrl.TrimEnd('/')}/shared/{Uri.EscapeDataString(token)}";
+    }
+
+    private static string GenerateToken()
+    {
+        return Base64UrlEncode(RandomNumberGenerator.GetBytes(TokenBytes));
+    }
+
+    private static string HashToken(string token)
+    {
+        return Convert.ToHexString(SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(token)));
+    }
+
+    private static string Base64UrlEncode(byte[] bytes)
+    {
+        return Convert.ToBase64String(bytes)
+            .TrimEnd('=')
+            .Replace('+', '-')
+            .Replace('/', '_');
+    }
+}
