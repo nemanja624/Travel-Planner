@@ -60,6 +60,8 @@ namespace Gateway
                             options.UseSqlServer(builder.Configuration.GetConnectionString("AuthDatabase")));
                         builder.Services.AddHttpContextAccessor();
                         builder.Services.AddScoped<ITripPlannerService, TripPlannerService>();
+                        builder.Services.AddSingleton(builder.Configuration.GetSection("ShareLinks").Get<ShareLinkOptions>() ?? new ShareLinkOptions());
+                        builder.Services.AddScoped<IShareLinkService, ShareLinkService>();
                         builder.Services.AddScoped<IPasswordHasher, BcryptPasswordHasher>();
                         builder.Services.AddSingleton(builder.Configuration.GetSection("Jwt").Get<JwtOptions>() ?? new JwtOptions());
                         builder.Services.AddScoped<IAccessTokenService, JwtAccessTokenService>();
