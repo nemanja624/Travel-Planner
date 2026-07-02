@@ -1,4 +1,5 @@
 using Contracts.Trips;
+using Gateway.Security;
 using Microsoft.AspNetCore.Mvc;
 using TripService.Core.Common;
 using TripService.Core.Services;
@@ -9,12 +10,15 @@ namespace Gateway.Controllers;
 [Route("api/trips")]
 public sealed class TripsController : ControllerBase
 {
-    private const string UserIdHeader = "X-User-Id";
     private readonly ITripPlannerService tripPlannerService;
+    private readonly ICurrentUserService currentUserService;
 
-    public TripsController(ITripPlannerService tripPlannerService)
+    public TripsController(
+        ITripPlannerService tripPlannerService,
+        ICurrentUserService currentUserService)
     {
         this.tripPlannerService = tripPlannerService;
+        this.currentUserService = currentUserService;
     }
 
     [HttpGet]
@@ -270,17 +274,18 @@ public sealed class TripsController : ControllerBase
     {
         ownerId = Guid.Empty;
 
-        if (!Request.Headers.TryGetValue(UserIdHeader, out var userIdValues))
+        if (!currentUserService.TryGetCurrentUser(out var user))
         {
             return false;
         }
 
-        return Guid.TryParse(userIdValues.FirstOrDefault(), out ownerId);
+        ownerId = user.Id;
+        return true;
     }
 
-    private ObjectResult MissingUser()
+    private UnauthorizedObjectResult MissingUser()
     {
-        return BadRequest(new { error = $"Missing or invalid {UserIdHeader} header." });
+        return Unauthorized(new { error = "Missing or invalid access token." });
     }
 
     private ActionResult<T> ToActionResult<T>(ServiceResult<T> result)
