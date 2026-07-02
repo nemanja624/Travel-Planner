@@ -25,4 +25,11 @@ public sealed record UserDto(
     string Name,
     string Email,
     UserRole Role,
+    bool IsActive,
     DateTime CreatedAtUtc);
+
+public sealed record UpdateUserRoleRequest(
+    UserRole Role);
+
+public sealed record UpdateUserStatusRequest(
+    bool IsActive);
