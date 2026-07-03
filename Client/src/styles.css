@@ -110,7 +110,8 @@ label {
 }
 
 input,
-textarea {
+textarea,
+select {
   width: 100%;
   min-height: 42px;
   border: 1px solid #c8d2e2;
@@ -367,8 +368,46 @@ textarea {
   font-size: 18px;
 }
 
+.list-item h4 {
+  margin: 0;
+  font-size: 17px;
+}
+
 .list-item p {
   margin: 4px 0 0;
   color: #526075;
   line-height: 1.5;
+}
+
+.calendar-list {
+  display: grid;
+  gap: 18px;
+}
+
+.calendar-day {
+  display: grid;
+  gap: 10px;
+}
+
+.calendar-day h3 {
+  margin: 0;
+  color: #344258;
+  font-size: 18px;
+}
+
+.activity-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.status-pill {
+  border-radius: 999px;
+  padding: 5px 10px;
+  color: #1f5d66;
+  background: #e4f1f3;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
 }
