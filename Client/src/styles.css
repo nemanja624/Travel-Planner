@@ -135,9 +135,78 @@ input {
   background: #e4f1f3;
 }
 
+.secondary-button.compact {
+  margin-top: 0;
+}
+
 .form-error {
   margin: 0;
   color: #b42318;
   font-size: 14px;
   font-weight: 700;
+}
+
+.page-panel {
+  width: min(100%, 1120px);
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.state-message {
+  margin: 20px 0 0;
+  color: #526075;
+  font-weight: 700;
+}
+
+.trip-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.trip-card {
+  min-height: 190px;
+  border: 1px solid #d8deea;
+  border-radius: 8px;
+  padding: 18px;
+  background: #ffffff;
+}
+
+.trip-card h2 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.25;
+}
+
+.trip-card p {
+  margin: 8px 0 18px;
+  color: #5c6b82;
+}
+
+.trip-card dl {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.trip-card dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.trip-card dt {
+  color: #6a788c;
+}
+
+.trip-card dd {
+  margin: 0;
+  color: #172033;
+  font-weight: 800;
 }

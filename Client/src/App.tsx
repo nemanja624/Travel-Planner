@@ -1,4 +1,5 @@
 import { AuthPanel } from "./components/AuthPanel";
+import { TripListPage } from "./components/TripListPage";
 import { environment } from "./config/environment";
 import { useAuth } from "./state";
 
@@ -8,24 +9,19 @@ export function App() {
   return (
     <main className="app-shell">
       <section className="workspace">
-        <div className="intro-panel">
-          <p className="eyebrow">Travel Planner</p>
-          <h1>Planovi putovanja</h1>
-          <p className="summary">
-            Frontend aplikacija je spremna za povezivanje sa backend servisima.
-          </p>
-          <p className="api-url">Backend: {environment.apiBaseUrl}</p>
-          <p className="api-url">
-            Status: {isAuthenticated && auth ? `ulogovan kao ${auth.email}` : "nije ulogovan"}
-          </p>
-          {isAuthenticated ? (
-            <button className="secondary-button" type="button" onClick={logout}>
-              Odjavi se
-            </button>
-          ) : (
+        {isAuthenticated && auth ? (
+          <TripListPage userEmail={auth.email} onLogout={logout} />
+        ) : (
+          <div className="intro-panel">
+            <p className="eyebrow">Travel Planner</p>
+            <h1>Planovi putovanja</h1>
+            <p className="summary">
+              Frontend aplikacija je spremna za povezivanje sa backend servisima.
+            </p>
+            <p className="api-url">Backend: {environment.apiBaseUrl}</p>
             <AuthPanel />
-          )}
-        </div>
+          </div>
+        )}
       </section>
     </main>
   );
