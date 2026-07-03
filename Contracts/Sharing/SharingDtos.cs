@@ -15,6 +15,7 @@ public sealed record ShareLinkDto(
     ShareAccessLevel AccessLevel,
     string Token,
     string ShareUrl,
+    string QrCodeUrl,
     DateTime ExpiresAtUtc,
     DateTime CreatedAtUtc);
 

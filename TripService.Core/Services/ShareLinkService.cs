@@ -93,12 +93,15 @@ public sealed class ShareLinkService : IShareLinkService
 
     private ShareLinkDto ToDto(ShareLink shareLink, string token)
     {
+        var shareUrl = BuildShareUrl(token);
+
         return new ShareLinkDto(
             shareLink.Id,
             shareLink.TripId,
             shareLink.AccessLevel,
             token,
-            BuildShareUrl(token),
+            shareUrl,
+            BuildQrCodeUrl(shareUrl),
             shareLink.ExpiresAtUtc,
             shareLink.CreatedAtUtc);
     }
@@ -106,6 +109,11 @@ public sealed class ShareLinkService : IShareLinkService
     private string BuildShareUrl(string token)
     {
         return $"{options.PublicBaseUrl.TrimEnd('/')}/shared/{Uri.EscapeDataString(token)}";
+    }
+
+    private string BuildQrCodeUrl(string shareUrl)
+    {
+        return options.QrCodeUrlTemplate.Replace("{shareUrl}", Uri.EscapeDataString(shareUrl));
     }
 
     private static string GenerateToken()
