@@ -6,9 +6,10 @@ import { TripForm } from "./TripForm";
 interface TripListPageProps {
   userEmail: string;
   onLogout: () => void;
+  onOpenTrip: (tripId: string) => void;
 }
 
-export function TripListPage({ userEmail, onLogout }: TripListPageProps) {
+export function TripListPage({ userEmail, onLogout, onOpenTrip }: TripListPageProps) {
   const [trips, setTrips] = useState<TripSummary[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -100,6 +101,9 @@ export function TripListPage({ userEmail, onLogout }: TripListPageProps) {
                 <dd>{formatCurrency(trip.remainingBudget)}</dd>
               </div>
             </dl>
+            <button className="secondary-button compact" type="button" onClick={() => onOpenTrip(trip.id)}>
+              Otvori detalje
+            </button>
           </article>
         ))}
       </div>

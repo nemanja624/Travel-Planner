@@ -223,7 +223,7 @@ textarea {
 .trip-card dl {
   display: grid;
   gap: 10px;
-  margin: 0;
+  margin: 0 0 18px;
 }
 
 .trip-card dl div {
@@ -239,5 +239,62 @@ textarea {
 .trip-card dd {
   margin: 0;
   color: #172033;
+  font-weight: 800;
+}
+
+.details-panel {
+  margin-top: 24px;
+  border: 1px solid #d8deea;
+  border-radius: 8px;
+  padding: 22px;
+  background: #ffffff;
+}
+
+.details-header {
+  margin-bottom: 22px;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.details-grid section {
+  border: 1px solid #e1e6ef;
+  border-radius: 8px;
+  padding: 16px;
+  background: #fbfcfe;
+}
+
+.details-grid h2 {
+  margin: 0 0 10px;
+  font-size: 18px;
+}
+
+.details-grid p {
+  margin: 0;
+  color: #526075;
+  line-height: 1.6;
+}
+
+.details-grid dl {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.details-grid dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.details-grid dt {
+  color: #6a788c;
+}
+
+.details-grid dd {
+  margin: 0;
   font-weight: 800;
 }
