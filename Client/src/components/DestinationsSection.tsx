@@ -17,6 +17,8 @@ const initialForm: DestinationFormData = {
 export function DestinationsSection({ tripId }: DestinationsSectionProps) {
   const [destinations, setDestinations] = useState<Destination[]>([]);
   const [form, setForm] = useState<DestinationFormData>(initialForm);
+  const [editingDestinationId, setEditingDestinationId] = useState<string | null>(null);
+  const [deletingDestinationId, setDeletingDestinationId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -60,13 +62,62 @@ export function DestinationsSection({ tripId }: DestinationsSectionProps) {
 
     setIsSubmitting(true);
     try {
-      const destination = await tripService.createDestination(tripId, form);
-      setDestinations((currentDestinations) => [...currentDestinations, destination]);
+      if (editingDestinationId) {
+        const destination = await tripService.updateDestination(tripId, editingDestinationId, form);
+        setDestinations((currentDestinations) =>
+          currentDestinations.map((currentDestination) =>
+            currentDestination.id === destination.id ? destination : currentDestination
+          )
+        );
+        setEditingDestinationId(null);
+      } else {
+        const destination = await tripService.createDestination(tripId, form);
+        setDestinations((currentDestinations) => [...currentDestinations, destination]);
+      }
+
       setForm(initialForm);
     } catch (caughtError) {
       setError(caughtError instanceof ApiError ? caughtError.message : "Destinacija nije sacuvana.");
     } finally {
       setIsSubmitting(false);
+    }
+  }
+
+  function startEditing(destination: Destination) {
+    setEditingDestinationId(destination.id);
+    setError(null);
+    setForm({
+      name: destination.name,
+      location: destination.location,
+      arrivalDate: toDateInputValue(destination.arrivalDate),
+      departureDate: toDateInputValue(destination.departureDate),
+      description: destination.description ?? ""
+    });
+  }
+
+  function cancelEditing() {
+    setEditingDestinationId(null);
+    setError(null);
+    setForm(initialForm);
+  }
+
+  async function handleDelete(destinationId: string) {
+    setError(null);
+    setDeletingDestinationId(destinationId);
+
+    try {
+      await tripService.deleteDestination(tripId, destinationId);
+      setDestinations((currentDestinations) =>
+        currentDestinations.filter((destination) => destination.id !== destinationId)
+      );
+
+      if (editingDestinationId === destinationId) {
+        cancelEditing();
+      }
+    } catch (caughtError) {
+      setError(caughtError instanceof ApiError ? caughtError.message : "Destinacija nije obrisana.");
+    } finally {
+      setDeletingDestinationId(null);
     }
   }
 
@@ -110,9 +161,16 @@ export function DestinationsSection({ tripId }: DestinationsSectionProps) {
           Opis ili napomena
           <textarea value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} />
         </label>
-        <button className="primary-button" disabled={isSubmitting} type="submit">
-          {isSubmitting ? "Cuvanje..." : "Dodaj destinaciju"}
-        </button>
+        <div className="form-actions">
+          <button className="primary-button" disabled={isSubmitting} type="submit">
+            {isSubmitting ? "Cuvanje..." : editingDestinationId ? "Sacuvaj izmjene" : "Dodaj destinaciju"}
+          </button>
+          {editingDestinationId && (
+            <button className="secondary-button inline" disabled={isSubmitting} type="button" onClick={cancelEditing}>
+              Otkazi
+            </button>
+          )}
+        </div>
       </form>
 
       {destinations.length === 0 && !isLoading && <p className="state-message">Nema destinacija.</p>}
@@ -127,6 +185,19 @@ export function DestinationsSection({ tripId }: DestinationsSectionProps) {
               </p>
             </div>
             <p>{destination.description}</p>
+            <div className="item-actions">
+              <button className="secondary-button inline" type="button" onClick={() => startEditing(destination)}>
+                Uredi
+              </button>
+              <button
+                className="danger-button"
+                disabled={deletingDestinationId === destination.id}
+                type="button"
+                onClick={() => handleDelete(destination.id)}
+              >
+                {deletingDestinationId === destination.id ? "Brisanje..." : "Obrisi"}
+              </button>
+            </div>
           </article>
         ))}
       </div>
@@ -152,4 +223,8 @@ function validateDestination(form: DestinationFormData) {
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("sr-Latn-BA").format(new Date(value));
+}
+
+function toDateInputValue(value: string) {
+  return value.slice(0, 10);
 }
