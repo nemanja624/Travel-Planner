@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { TripSummary } from "../models";
+import { Trip, TripSummary } from "../models";
 import { ApiError, tripService } from "../services";
+import { TripForm } from "./TripForm";
 
 interface TripListPageProps {
   userEmail: string;
@@ -11,6 +12,21 @@ export function TripListPage({ userEmail, onLogout }: TripListPageProps) {
   const [trips, setTrips] = useState<TripSummary[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  function handleTripCreated(trip: Trip) {
+    setTrips((currentTrips) => [
+      {
+        id: trip.id,
+        title: trip.title,
+        startDate: trip.startDate,
+        endDate: trip.endDate,
+        plannedBudget: trip.plannedBudget,
+        totalExpenses: trip.totalExpenses,
+        remainingBudget: trip.remainingBudget
+      },
+      ...currentTrips
+    ]);
+  }
 
   useEffect(() => {
     let isMounted = true;
@@ -51,6 +67,11 @@ export function TripListPage({ userEmail, onLogout }: TripListPageProps) {
           Odjavi se
         </button>
       </header>
+
+      <section className="form-section">
+        <h2>Novi plan putovanja</h2>
+        <TripForm onCreated={handleTripCreated} />
+      </section>
 
       {isLoading && <p className="state-message">Ucitavanje planova...</p>}
       {error && <p className="form-error">{error}</p>}
