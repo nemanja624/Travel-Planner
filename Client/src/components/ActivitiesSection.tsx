@@ -27,6 +27,8 @@ const statusLabels: Record<ActivityStatus, string> = {
 export function ActivitiesSection({ tripId }: ActivitiesSectionProps) {
   const [activities, setActivities] = useState<TripActivity[]>([]);
   const [form, setForm] = useState<ActivityFormData>(initialForm);
+  const [editingActivityId, setEditingActivityId] = useState<string | null>(null);
+  const [deletingActivityId, setDeletingActivityId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -72,13 +74,60 @@ export function ActivitiesSection({ tripId }: ActivitiesSectionProps) {
 
     setIsSubmitting(true);
     try {
-      const activity = await tripService.createActivity(tripId, form);
-      setActivities((currentActivities) => [...currentActivities, activity]);
+      if (editingActivityId) {
+        const activity = await tripService.updateActivity(tripId, editingActivityId, form);
+        setActivities((currentActivities) =>
+          currentActivities.map((currentActivity) => (currentActivity.id === activity.id ? activity : currentActivity))
+        );
+        setEditingActivityId(null);
+      } else {
+        const activity = await tripService.createActivity(tripId, form);
+        setActivities((currentActivities) => [...currentActivities, activity]);
+      }
+
       setForm(initialForm);
     } catch (caughtError) {
       setError(caughtError instanceof ApiError ? caughtError.message : "Aktivnost nije sacuvana.");
     } finally {
       setIsSubmitting(false);
+    }
+  }
+
+  function startEditing(activity: TripActivity) {
+    setEditingActivityId(activity.id);
+    setError(null);
+    setForm({
+      title: activity.title,
+      date: toDateInputValue(activity.date),
+      time: toTimeInputValue(activity.time),
+      location: activity.location,
+      description: activity.description,
+      estimatedCost: activity.estimatedCost,
+      status: activity.status
+    });
+  }
+
+  function cancelEditing() {
+    setEditingActivityId(null);
+    setError(null);
+    setForm(initialForm);
+  }
+
+  async function handleDelete(activityId: string) {
+    setError(null);
+    setDeletingActivityId(activityId);
+
+    try {
+      await tripService.deleteActivity(tripId, activityId);
+      setActivities((currentActivities) => currentActivities.filter((activity) => activity.id !== activityId));
+
+      if (editingActivityId === activityId) {
+        cancelEditing();
+      }
+    } catch (caughtError) {
+      setError(caughtError instanceof ApiError ? caughtError.message : "Aktivnost nije obrisana.");
+    } finally {
+      setDeletingActivityId(null);
     }
   }
 
@@ -149,8 +198,13 @@ export function ActivitiesSection({ tripId }: ActivitiesSectionProps) {
         </label>
         <div className="form-actions">
           <button className="primary-button" disabled={isSubmitting} type="submit">
-            {isSubmitting ? "Cuvanje..." : "Dodaj aktivnost"}
+            {isSubmitting ? "Cuvanje..." : editingActivityId ? "Sacuvaj izmjene" : "Dodaj aktivnost"}
           </button>
+          {editingActivityId && (
+            <button className="secondary-button inline" disabled={isSubmitting} type="button" onClick={cancelEditing}>
+              Otkazi
+            </button>
+          )}
         </div>
       </form>
 
@@ -173,6 +227,19 @@ export function ActivitiesSection({ tripId }: ActivitiesSectionProps) {
                   </div>
                   <p>{activity.description || "Nema opisa."}</p>
                   <p>Procjena: {formatCurrency(activity.estimatedCost)}</p>
+                  <div className="item-actions">
+                    <button className="secondary-button inline" type="button" onClick={() => startEditing(activity)}>
+                      Uredi
+                    </button>
+                    <button
+                      className="danger-button"
+                      disabled={deletingActivityId === activity.id}
+                      type="button"
+                      onClick={() => handleDelete(activity.id)}
+                    >
+                      {deletingActivityId === activity.id ? "Brisanje..." : "Obrisi"}
+                    </button>
+                  </div>
                 </article>
               ))}
             </div>
@@ -233,4 +300,8 @@ function formatCurrency(value: number) {
 
 function toDateInputValue(value: string) {
   return value.slice(0, 10);
+}
+
+function toTimeInputValue(value: string) {
+  return value.slice(0, 5);
 }
