@@ -1,3 +1,5 @@
+import { environment } from "./config/environment";
+
 export function App() {
   return (
     <main className="app-shell">
@@ -8,6 +10,7 @@ export function App() {
           <p className="summary">
             Frontend aplikacija je spremna za povezivanje sa backend servisima.
           </p>
+          <p className="api-url">Backend: {environment.apiBaseUrl}</p>
         </div>
       </section>
     </main>
