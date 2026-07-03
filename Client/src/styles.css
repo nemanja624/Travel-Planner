@@ -411,3 +411,30 @@ textarea {
   font-weight: 800;
   white-space: nowrap;
 }
+
+.budget-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.budget-summary div {
+  display: grid;
+  gap: 6px;
+  border: 1px solid #e1e6ef;
+  border-radius: 8px;
+  padding: 14px;
+  background: #fbfcfe;
+}
+
+.budget-summary span {
+  color: #6a788c;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.budget-summary strong,
+.activity-heading strong {
+  color: #172033;
+  font-size: 18px;
+}

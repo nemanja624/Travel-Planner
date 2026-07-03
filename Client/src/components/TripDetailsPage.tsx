@@ -3,6 +3,7 @@ import { Trip } from "../models";
 import { ApiError, tripService } from "../services";
 import { ActivitiesSection } from "./ActivitiesSection";
 import { DestinationsSection } from "./DestinationsSection";
+import { ExpensesSection } from "./ExpensesSection";
 
 interface TripDetailsPageProps {
   tripId: string;
@@ -92,6 +93,7 @@ export function TripDetailsPage({ tripId, onBack }: TripDetailsPageProps) {
 
           <DestinationsSection tripId={trip.id} />
           <ActivitiesSection tripId={trip.id} />
+          <ExpensesSection tripId={trip.id} />
         </article>
       )}
     </section>
