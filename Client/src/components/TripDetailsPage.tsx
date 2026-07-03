@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Trip } from "../models";
 import { ApiError, tripService } from "../services";
+import { DestinationsSection } from "./DestinationsSection";
 
 interface TripDetailsPageProps {
   tripId: string;
@@ -87,6 +88,8 @@ export function TripDetailsPage({ tripId, onBack }: TripDetailsPageProps) {
               </dl>
             </section>
           </div>
+
+          <DestinationsSection tripId={trip.id} />
         </article>
       )}
     </section>

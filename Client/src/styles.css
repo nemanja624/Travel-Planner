@@ -298,3 +298,54 @@ textarea {
   margin: 0;
   font-weight: 800;
 }
+
+.management-section {
+  display: grid;
+  gap: 16px;
+  margin-top: 24px;
+  border-top: 1px solid #d8deea;
+  padding-top: 22px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.section-header span {
+  color: #526075;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.item-list {
+  display: grid;
+  gap: 12px;
+}
+
+.list-item {
+  display: grid;
+  gap: 10px;
+  border: 1px solid #e1e6ef;
+  border-radius: 8px;
+  padding: 14px;
+  background: #fbfcfe;
+}
+
+.list-item h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.list-item p {
+  margin: 4px 0 0;
+  color: #526075;
+  line-height: 1.5;
+}
