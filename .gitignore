@@ -12,4 +12,5 @@ TestResults/
 node_modules/
 dist/
 .env
+*.tsbuildinfo
 packages/
