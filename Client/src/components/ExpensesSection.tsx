@@ -28,6 +28,8 @@ export function ExpensesSection({ tripId }: ExpensesSectionProps) {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [budget, setBudget] = useState<BudgetSummary | null>(null);
   const [form, setForm] = useState<ExpenseFormData>(initialForm);
+  const [editingExpenseId, setEditingExpenseId] = useState<string | null>(null);
+  const [deletingExpenseId, setDeletingExpenseId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -76,15 +78,61 @@ export function ExpensesSection({ tripId }: ExpensesSectionProps) {
 
     setIsSubmitting(true);
     try {
-      const expense = await tripService.createExpense(tripId, form);
+      const expense = editingExpenseId
+        ? await tripService.updateExpense(tripId, editingExpenseId, form)
+        : await tripService.createExpense(tripId, form);
       const updatedBudget = await tripService.getBudget(tripId);
-      setExpenses((currentExpenses) => [...currentExpenses, expense]);
+
+      setExpenses((currentExpenses) =>
+        editingExpenseId
+          ? currentExpenses.map((currentExpense) => (currentExpense.id === expense.id ? expense : currentExpense))
+          : [...currentExpenses, expense]
+      );
       setBudget(updatedBudget);
+      setEditingExpenseId(null);
       setForm(initialForm);
     } catch (caughtError) {
       setError(caughtError instanceof ApiError ? caughtError.message : "Trosak nije sacuvan.");
     } finally {
       setIsSubmitting(false);
+    }
+  }
+
+  function startEditing(expense: Expense) {
+    setEditingExpenseId(expense.id);
+    setError(null);
+    setForm({
+      name: expense.name,
+      category: expense.category,
+      amount: expense.amount,
+      date: toDateInputValue(expense.date),
+      description: expense.description
+    });
+  }
+
+  function cancelEditing() {
+    setEditingExpenseId(null);
+    setError(null);
+    setForm(initialForm);
+  }
+
+  async function handleDelete(expenseId: string) {
+    setError(null);
+    setDeletingExpenseId(expenseId);
+
+    try {
+      await tripService.deleteExpense(tripId, expenseId);
+      const updatedBudget = await tripService.getBudget(tripId);
+      setExpenses((currentExpenses) => currentExpenses.filter((expense) => expense.id !== expenseId));
+      setBudget(updatedBudget);
+
+      if (editingExpenseId === expenseId) {
+        cancelEditing();
+      }
+    } catch (caughtError) {
+      setError(caughtError instanceof ApiError ? caughtError.message : "Trosak nije obrisan.");
+    } finally {
+      setDeletingExpenseId(null);
     }
   }
 
@@ -138,7 +186,7 @@ export function ExpensesSection({ tripId }: ExpensesSectionProps) {
           <label>
             Iznos
             <input
-              min="0"
+              min="0.01"
               step="0.01"
               type="number"
               value={form.amount}
@@ -160,8 +208,13 @@ export function ExpensesSection({ tripId }: ExpensesSectionProps) {
         </label>
         <div className="form-actions">
           <button className="primary-button" disabled={isSubmitting} type="submit">
-            {isSubmitting ? "Cuvanje..." : "Dodaj trosak"}
+            {isSubmitting ? "Cuvanje..." : editingExpenseId ? "Sacuvaj izmjene" : "Dodaj trosak"}
           </button>
+          {editingExpenseId && (
+            <button className="secondary-button inline" disabled={isSubmitting} type="button" onClick={cancelEditing}>
+              Otkazi
+            </button>
+          )}
         </div>
       </form>
 
@@ -179,6 +232,19 @@ export function ExpensesSection({ tripId }: ExpensesSectionProps) {
               <strong>{formatCurrency(expense.amount)}</strong>
             </div>
             <p>{expense.description || "Nema opisa."}</p>
+            <div className="item-actions">
+              <button className="secondary-button inline" type="button" onClick={() => startEditing(expense)}>
+                Uredi
+              </button>
+              <button
+                className="danger-button"
+                disabled={deletingExpenseId === expense.id}
+                type="button"
+                onClick={() => handleDelete(expense.id)}
+              >
+                {deletingExpenseId === expense.id ? "Brisanje..." : "Obrisi"}
+              </button>
+            </div>
           </article>
         ))}
       </div>
@@ -195,8 +261,8 @@ function validateExpense(form: ExpenseFormData) {
     return "Datum troska je obavezan.";
   }
 
-  if (form.amount < 0) {
-    return "Iznos troska ne moze biti negativan.";
+  if (form.amount <= 0) {
+    return "Iznos troska mora biti veci od nule.";
   }
 
   return null;
@@ -211,4 +277,8 @@ function formatCurrency(value: number) {
     style: "currency",
     currency: "EUR"
   }).format(value);
+}
+
+function toDateInputValue(value: string) {
+  return value.slice(0, 10);
 }
