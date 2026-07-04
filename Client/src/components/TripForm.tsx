@@ -1,9 +1,13 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Trip, TripFormData } from "../models";
 import { ApiError, tripService } from "../services";
 
 interface TripFormProps {
-  onCreated: (trip: Trip) => void;
+  tripId?: string;
+  initialData?: TripFormData;
+  submitLabel?: string;
+  onCancel?: () => void;
+  onSaved: (trip: Trip) => void;
 }
 
 const initialForm: TripFormData = {
@@ -15,10 +19,15 @@ const initialForm: TripFormData = {
   notes: ""
 };
 
-export function TripForm({ onCreated }: TripFormProps) {
-  const [form, setForm] = useState<TripFormData>(initialForm);
+export function TripForm({ tripId, initialData, submitLabel, onCancel, onSaved }: TripFormProps) {
+  const [form, setForm] = useState<TripFormData>(initialData ?? initialForm);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    setForm(initialData ?? initialForm);
+    setError(null);
+  }, [initialData]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -32,9 +41,11 @@ export function TripForm({ onCreated }: TripFormProps) {
 
     setIsSubmitting(true);
     try {
-      const createdTrip = await tripService.createTrip(form);
-      onCreated(createdTrip);
-      setForm(initialForm);
+      const savedTrip = tripId ? await tripService.updateTrip(tripId, form) : await tripService.createTrip(form);
+      onSaved(savedTrip);
+      if (!tripId) {
+        setForm(initialForm);
+      }
     } catch (caughtError) {
       setError(caughtError instanceof ApiError ? caughtError.message : "Plan nije sacuvan.");
     } finally {
@@ -98,9 +109,16 @@ export function TripForm({ onCreated }: TripFormProps) {
 
       {error && <p className="form-error">{error}</p>}
 
-      <button className="primary-button" disabled={isSubmitting} type="submit">
-        {isSubmitting ? "Cuvanje..." : "Dodaj plan"}
-      </button>
+      <div className="form-actions">
+        <button className="primary-button" disabled={isSubmitting} type="submit">
+          {isSubmitting ? "Cuvanje..." : submitLabel ?? "Dodaj plan"}
+        </button>
+        {onCancel && (
+          <button className="secondary-button inline" disabled={isSubmitting} type="button" onClick={onCancel}>
+            Otkazi
+          </button>
+        )}
+      </div>
     </form>
   );
 }
