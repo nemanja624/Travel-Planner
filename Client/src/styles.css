@@ -188,6 +188,13 @@ input[type="checkbox"] {
   margin-bottom: 28px;
 }
 
+.page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
 .state-message {
   margin: 20px 0 0;
   color: #526075;
@@ -501,13 +508,38 @@ input[type="checkbox"] {
   color: #526075;
 }
 
+.user-row {
+  grid-template-columns: minmax(220px, 1fr) minmax(260px, auto);
+  align-items: center;
+}
+
+.admin-controls {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.admin-controls label {
+  min-width: 160px;
+}
+
 @media (max-width: 640px) {
   .inline-form,
-  .checklist-item {
+  .checklist-item,
+  .user-row {
     grid-template-columns: 1fr;
   }
 
-  .checklist-item {
+  .checklist-item,
+  .admin-controls {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .page-header,
+  .page-actions {
     align-items: flex-start;
     flex-direction: column;
   }

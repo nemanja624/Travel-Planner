@@ -5,11 +5,13 @@ import { TripForm } from "./TripForm";
 
 interface TripListPageProps {
   userEmail: string;
+  canAdminister: boolean;
   onLogout: () => void;
+  onOpenAdmin: () => void;
   onOpenTrip: (tripId: string) => void;
 }
 
-export function TripListPage({ userEmail, onLogout, onOpenTrip }: TripListPageProps) {
+export function TripListPage({ userEmail, canAdminister, onLogout, onOpenAdmin, onOpenTrip }: TripListPageProps) {
   const [trips, setTrips] = useState<TripSummary[]>([]);
   const [editingTrip, setEditingTrip] = useState<Trip | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -94,9 +96,16 @@ export function TripListPage({ userEmail, onLogout, onOpenTrip }: TripListPagePr
           <h1>Moji planovi</h1>
           <p className="summary">Ulogovan kao {userEmail}</p>
         </div>
-        <button className="secondary-button compact" type="button" onClick={onLogout}>
-          Odjavi se
-        </button>
+        <div className="page-actions">
+          {canAdminister && (
+            <button className="secondary-button compact" type="button" onClick={onOpenAdmin}>
+              Administracija
+            </button>
+          )}
+          <button className="secondary-button compact" type="button" onClick={onLogout}>
+            Odjavi se
+          </button>
+        </div>
       </header>
 
       <section className="form-section">

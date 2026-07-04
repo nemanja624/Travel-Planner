@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { UserRole } from "./models";
+import { AdminUsersPage } from "./components/AdminUsersPage";
 import { AuthPanel } from "./components/AuthPanel";
 import { SharedTripPage } from "./components/SharedTripPage";
 import { TripDetailsPage } from "./components/TripDetailsPage";
@@ -9,10 +11,12 @@ import { useAuth } from "./state";
 export function App() {
   const { auth, isAuthenticated, logout } = useAuth();
   const [selectedTripId, setSelectedTripId] = useState<string | null>(null);
+  const [isAdminOpen, setIsAdminOpen] = useState(false);
   const sharedToken = getSharedToken();
 
   function handleLogout() {
     setSelectedTripId(null);
+    setIsAdminOpen(false);
     logout();
   }
 
@@ -21,10 +25,18 @@ export function App() {
       <section className="workspace">
         {sharedToken ? (
           <SharedTripPage token={sharedToken} />
+        ) : isAuthenticated && auth && isAdminOpen ? (
+          <AdminUsersPage onBack={() => setIsAdminOpen(false)} />
         ) : isAuthenticated && auth && selectedTripId ? (
           <TripDetailsPage tripId={selectedTripId} onBack={() => setSelectedTripId(null)} />
         ) : isAuthenticated && auth ? (
-          <TripListPage userEmail={auth.email} onLogout={handleLogout} onOpenTrip={setSelectedTripId} />
+          <TripListPage
+            canAdminister={auth.role === UserRole.Admin}
+            userEmail={auth.email}
+            onLogout={handleLogout}
+            onOpenAdmin={() => setIsAdminOpen(true)}
+            onOpenTrip={setSelectedTripId}
+          />
         ) : (
           <div className="intro-panel">
             <p className="eyebrow">Travel Planner</p>
