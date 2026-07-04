@@ -176,6 +176,13 @@ input[type="checkbox"] {
   font-weight: 700;
 }
 
+.success-message {
+  margin: 0;
+  color: #1f7a4f;
+  font-size: 14px;
+  font-weight: 700;
+}
+
 .page-panel {
   width: min(100%, 1120px);
 }

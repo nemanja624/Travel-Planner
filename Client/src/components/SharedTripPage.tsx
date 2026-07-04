@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { ActivityStatus, ExpenseCategory, ShareAccessLevel, SharedTrip } from "../models";
+import { ActivityStatus, ExpenseCategory, ShareAccessLevel, SharedTrip, Trip, TripFormData } from "../models";
 import { ApiError, sharingService } from "../services";
+import { TripForm } from "./TripForm";
 
 interface SharedTripPageProps {
   token: string;
@@ -30,6 +31,7 @@ const accessLabels: Record<ShareAccessLevel, string> = {
 export function SharedTripPage({ token }: SharedTripPageProps) {
   const [sharedTrip, setSharedTrip] = useState<SharedTrip | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -63,6 +65,11 @@ export function SharedTripPage({ token }: SharedTripPageProps) {
     () => groupActivitiesByDate(sharedTrip?.activities ?? []),
     [sharedTrip?.activities]
   );
+
+  function handleTripSaved(trip: Trip) {
+    setSharedTrip((currentSharedTrip) => (currentSharedTrip ? { ...currentSharedTrip, trip } : currentSharedTrip));
+    setSaveMessage("Plan je sacuvan.");
+  }
 
   if (isLoading) {
     return <p className="state-message">Ucitavanje podijeljenog plana...</p>;
@@ -114,6 +121,21 @@ export function SharedTripPage({ token }: SharedTripPageProps) {
           </dl>
         </section>
       </div>
+
+      {sharedTrip.accessLevel === ShareAccessLevel.Edit && (
+        <section className="management-section">
+          <div className="section-header">
+            <h2>Izmjena plana</h2>
+          </div>
+          {saveMessage && <p className="success-message">{saveMessage}</p>}
+          <TripForm
+            initialData={toTripFormData(sharedTrip.trip)}
+            submitLabel="Sacuvaj izmjene"
+            onSubmitTrip={(form) => sharingService.updateSharedTrip(token, form)}
+            onSaved={handleTripSaved}
+          />
+        </section>
+      )}
 
       <ReadOnlySection title="Destinacije" emptyText="Nema destinacija.">
         {sharedTrip.destinations.map((destination) => (
@@ -237,4 +259,19 @@ function formatCurrency(value: number) {
     style: "currency",
     currency: "EUR"
   }).format(value);
+}
+
+function toTripFormData(trip: Trip): TripFormData {
+  return {
+    title: trip.title,
+    description: trip.description,
+    startDate: toDateInputValue(trip.startDate),
+    endDate: toDateInputValue(trip.endDate),
+    plannedBudget: trip.plannedBudget,
+    notes: trip.notes
+  };
+}
+
+function toDateInputValue(value: string) {
+  return value.slice(0, 10);
 }

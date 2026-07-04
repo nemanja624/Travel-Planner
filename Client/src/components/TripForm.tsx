@@ -7,6 +7,7 @@ interface TripFormProps {
   initialData?: TripFormData;
   submitLabel?: string;
   onCancel?: () => void;
+  onSubmitTrip?: (form: TripFormData) => Promise<Trip>;
   onSaved: (trip: Trip) => void;
 }
 
@@ -19,7 +20,7 @@ const initialForm: TripFormData = {
   notes: ""
 };
 
-export function TripForm({ tripId, initialData, submitLabel, onCancel, onSaved }: TripFormProps) {
+export function TripForm({ tripId, initialData, submitLabel, onCancel, onSubmitTrip, onSaved }: TripFormProps) {
   const [form, setForm] = useState<TripFormData>(initialData ?? initialForm);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -41,9 +42,13 @@ export function TripForm({ tripId, initialData, submitLabel, onCancel, onSaved }
 
     setIsSubmitting(true);
     try {
-      const savedTrip = tripId ? await tripService.updateTrip(tripId, form) : await tripService.createTrip(form);
+      const savedTrip = onSubmitTrip
+        ? await onSubmitTrip(form)
+        : tripId
+          ? await tripService.updateTrip(tripId, form)
+          : await tripService.createTrip(form);
       onSaved(savedTrip);
-      if (!tripId) {
+      if (!tripId && !onSubmitTrip) {
         setForm(initialForm);
       }
     } catch (caughtError) {
