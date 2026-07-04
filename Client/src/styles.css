@@ -127,6 +127,12 @@ textarea {
   resize: vertical;
 }
 
+input[type="checkbox"] {
+  width: 18px;
+  min-height: 18px;
+  padding: 0;
+}
+
 .primary-button {
   color: #ffffff;
   background: #256f7a;
@@ -217,6 +223,13 @@ textarea {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 14px;
+}
+
+.inline-form {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) auto;
+  gap: 12px;
+  align-items: end;
 }
 
 .trip-grid {
@@ -437,4 +450,46 @@ textarea {
 .activity-heading strong {
   color: #172033;
   font-size: 18px;
+}
+
+.checklist {
+  display: grid;
+  gap: 10px;
+}
+
+.checklist-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid #e1e6ef;
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: #fbfcfe;
+}
+
+.checkbox-label {
+  display: flex;
+  grid-template-columns: none;
+  align-items: center;
+  gap: 10px;
+  color: #172033;
+  font-size: 15px;
+}
+
+.completed-text {
+  color: #6a788c;
+  text-decoration: line-through;
+}
+
+@media (max-width: 640px) {
+  .inline-form,
+  .checklist-item {
+    grid-template-columns: 1fr;
+  }
+
+  .checklist-item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
