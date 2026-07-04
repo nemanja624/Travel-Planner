@@ -508,6 +508,21 @@ input[type="checkbox"] {
   color: #526075;
 }
 
+.qr-preview {
+  display: grid;
+  width: 180px;
+  height: 180px;
+  place-items: center;
+  border: 1px solid #d8deea;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.qr-preview img {
+  width: 160px;
+  height: 160px;
+}
+
 .user-row {
   grid-template-columns: minmax(220px, 1fr) minmax(260px, auto);
   align-items: center;

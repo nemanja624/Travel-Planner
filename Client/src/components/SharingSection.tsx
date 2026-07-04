@@ -89,6 +89,9 @@ export function SharingSection({ tripId }: SharingSectionProps) {
             <h3>{accessLabels[shareLink.accessLevel]}</h3>
             <p>Istice: {formatDateTime(shareLink.expiresAtUtc)}</p>
           </div>
+          <div className="qr-preview">
+            <img alt="QR kod za dijeljenje plana" src={shareLink.qrCodeUrl} />
+          </div>
           <label>
             Link
             <input readOnly value={shareLink.shareUrl} />
