@@ -5,6 +5,7 @@ import { ActivitiesSection } from "./ActivitiesSection";
 import { ChecklistSection } from "./ChecklistSection";
 import { DestinationsSection } from "./DestinationsSection";
 import { ExpensesSection } from "./ExpensesSection";
+import { SharingSection } from "./SharingSection";
 
 interface TripDetailsPageProps {
   tripId: string;
@@ -96,6 +97,7 @@ export function TripDetailsPage({ tripId, onBack }: TripDetailsPageProps) {
           <ActivitiesSection tripId={trip.id} />
           <ExpensesSection tripId={trip.id} />
           <ChecklistSection tripId={trip.id} />
+          <SharingSection tripId={trip.id} />
         </article>
       )}
     </section>
