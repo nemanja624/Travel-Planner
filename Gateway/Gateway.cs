@@ -9,6 +9,7 @@ using AuthService.Core.Security;
 using AuthService.Core.Services;
 using AuthService.Data;
 using Gateway.Security;
+using Gateway.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -54,6 +55,7 @@ namespace Gateway
                         builder.Services.AddControllers();
                         builder.Services.AddEndpointsApiExplorer();
                         builder.Services.AddSwaggerGen();
+                        builder.Services.AddHttpClient<AuthServiceHttpClient>();
                         builder.Services.AddDbContext<TripDbContext>(options =>
                             options.UseSqlServer(builder.Configuration.GetConnectionString("TravelPlannerDatabase")));
                         builder.Services.AddDbContext<AuthDbContext>(options =>

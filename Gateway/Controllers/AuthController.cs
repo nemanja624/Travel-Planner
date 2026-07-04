@@ -1,6 +1,5 @@
-using AuthService.Core.Common;
-using AuthService.Core.Services;
 using Contracts.Auth;
+using Gateway.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gateway.Controllers;
@@ -9,32 +8,33 @@ namespace Gateway.Controllers;
 [Route("api/auth")]
 public sealed class AuthController : ControllerBase
 {
-    private readonly IAuthService authService;
+    private readonly AuthServiceHttpClient authServiceHttpClient;
 
-    public AuthController(IAuthService authService)
+    public AuthController(AuthServiceHttpClient authServiceHttpClient)
     {
-        this.authService = authService;
+        this.authServiceHttpClient = authServiceHttpClient;
     }
 
     [HttpPost("register")]
-    public async Task<ActionResult<AuthResponse>> Register(RegisterUserRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Register(RegisterUserRequest request, CancellationToken cancellationToken)
     {
-        return ToActionResult(await authService.RegisterAsync(request, cancellationToken));
+        return await ToProxyResult(await authServiceHttpClient.RegisterAsync(request, cancellationToken));
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<AuthResponse>> Login(LoginRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Login(LoginRequest request, CancellationToken cancellationToken)
     {
-        return ToActionResult(await authService.LoginAsync(request, cancellationToken));
+        return await ToProxyResult(await authServiceHttpClient.LoginAsync(request, cancellationToken));
     }
 
-    private ActionResult<AuthResponse> ToActionResult(ServiceResult<AuthResponse> result)
+    private static async Task<IActionResult> ToProxyResult(HttpResponseMessage response)
     {
-        if (result.Succeeded && result.Value is not null)
+        var content = await response.Content.ReadAsStringAsync();
+        return new ContentResult
         {
-            return Ok(result.Value);
-        }
-
-        return BadRequest(new { error = result.Error });
+            Content = content,
+            ContentType = "application/json",
+            StatusCode = (int)response.StatusCode
+        };
     }
 }
