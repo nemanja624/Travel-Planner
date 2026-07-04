@@ -8,6 +8,8 @@
     <!-- This is the name of your ServiceType. 
          This name must match the string used in RegisterServiceType call in Program.cs. -->
     <StatelessServiceType ServiceTypeName="GatewayType" />
+    <StatefulServiceType ServiceTypeName="AuthStatefulServiceType" HasPersistedState="true" />
+    <StatefulServiceType ServiceTypeName="TripStatefulServiceType" HasPersistedState="true" />
   </ServiceTypes>
 
   <!-- Code package is your service executable. -->

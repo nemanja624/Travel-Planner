@@ -23,6 +23,12 @@ namespace Gateway
                 ServiceRuntime.RegisterServiceAsync("GatewayType",
                     context => new Gateway(context)).GetAwaiter().GetResult();
 
+                ServiceRuntime.RegisterServiceAsync("AuthStatefulServiceType",
+                    context => new AuthStatefulService(context)).GetAwaiter().GetResult();
+
+                ServiceRuntime.RegisterServiceAsync("TripStatefulServiceType",
+                    context => new TripStatefulService(context)).GetAwaiter().GetResult();
+
                 ServiceEventSource.Current.ServiceTypeRegistered(Process.GetCurrentProcess().Id, typeof(Gateway).Name);
 
                 // Prevents this host process from terminating so services keeps running. 

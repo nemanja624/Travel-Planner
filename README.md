@@ -24,6 +24,8 @@ Travel Planner je web aplikacija za planiranje putovanja. Sistem podrzava planov
 | Komponenta | Tip | Uloga |
 | --- | --- | --- |
 | `Gateway` | Service Fabric stateless ASP.NET Core servis | Javni REST API, autentikacija zahtjeva, autorizacija, pozivi ka core servisima |
+| `AuthService` | Service Fabric stateful servis | Logicki servis za korisnike i autentikaciju |
+| `TripService` | Service Fabric stateful servis | Logicki servis za putovanja, planove, budzet i dijeljenje |
 | `AuthService.Core` | Class library | Registracija, login, bcrypt hesiranje lozinki, JWT tokeni, admin logika |
 | `AuthService.Data` | Class library | `User` model i `AuthDbContext` |
 | `TripService.Core` | Class library | Poslovna logika za planove, destinacije, aktivnosti, troskove, checklistu i share linkove |
@@ -31,7 +33,7 @@ Travel Planner je web aplikacija za planiranje putovanja. Sistem podrzava planov
 | `Contracts` | Class library | DTO modeli i enum-i koje koriste backend slojevi |
 | `Client` | React + TypeScript + Vite | Frontend aplikacija |
 
-Klijent komunicira sa backendom preko `Gateway` REST API-ja. DTO modeli su odvojeni od modela baze, a mapiranje se nalazi u data/core slojevima.
+Klijent komunicira sa backendom preko `Gateway` REST API-ja. `Gateway` je stateless servis, dok su `AuthService` i `TripService` stateful Service Fabric servisi. DTO modeli su odvojeni od modela baze, a mapiranje se nalazi u data/core slojevima.
 
 ## Struktura projekta
 
