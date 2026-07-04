@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Trip, TripSummary } from "../models";
-import { ApiError, tripService } from "../services";
+import { ApiError, useServices } from "../services";
 import { TripForm } from "./TripForm";
 
 interface TripListPageProps {
@@ -12,6 +12,7 @@ interface TripListPageProps {
 }
 
 export function TripListPage({ userEmail, canAdminister, onLogout, onOpenAdmin, onOpenTrip }: TripListPageProps) {
+  const { tripService } = useServices();
   const [trips, setTrips] = useState<TripSummary[]>([]);
   const [editingTrip, setEditingTrip] = useState<Trip | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -55,7 +56,7 @@ export function TripListPage({ userEmail, canAdminister, onLogout, onOpenAdmin, 
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [tripService]);
 
   async function startEditing(tripId: string) {
     setError(null);

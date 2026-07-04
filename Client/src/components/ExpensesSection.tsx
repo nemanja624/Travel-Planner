@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import { ExpenseCategory } from "../models";
 import { BudgetSummary, Expense, ExpenseFormData } from "../models/trips";
-import { ApiError, tripService } from "../services";
+import { ApiError, useServices } from "../services";
 
 interface ExpensesSectionProps {
   tripId: string;
@@ -25,6 +25,7 @@ const categoryLabels: Record<ExpenseCategory, string> = {
 };
 
 export function ExpensesSection({ tripId }: ExpensesSectionProps) {
+  const { tripService } = useServices();
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [budget, setBudget] = useState<BudgetSummary | null>(null);
   const [form, setForm] = useState<ExpenseFormData>(initialForm);
@@ -64,7 +65,7 @@ export function ExpensesSection({ tripId }: ExpensesSectionProps) {
     return () => {
       isMounted = false;
     };
-  }, [tripId]);
+  }, [tripId, tripService]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

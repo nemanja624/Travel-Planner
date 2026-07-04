@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useState } from "react";
 import { Trip, TripFormData } from "../models";
-import { ApiError, tripService } from "../services";
+import { ApiError, useServices } from "../services";
 
 interface TripFormProps {
   tripId?: string;
@@ -21,6 +21,7 @@ const initialForm: TripFormData = {
 };
 
 export function TripForm({ tripId, initialData, submitLabel, onCancel, onSubmitTrip, onSaved }: TripFormProps) {
+  const { tripService } = useServices();
   const [form, setForm] = useState<TripFormData>(initialData ?? initialForm);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);

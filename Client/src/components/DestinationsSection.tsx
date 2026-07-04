@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useState } from "react";
 import { Destination, DestinationFormData } from "../models";
-import { ApiError, tripService } from "../services";
+import { ApiError, useServices } from "../services";
 
 interface DestinationsSectionProps {
   tripId: string;
@@ -15,6 +15,7 @@ const initialForm: DestinationFormData = {
 };
 
 export function DestinationsSection({ tripId }: DestinationsSectionProps) {
+  const { tripService } = useServices();
   const [destinations, setDestinations] = useState<Destination[]>([]);
   const [form, setForm] = useState<DestinationFormData>(initialForm);
   const [editingDestinationId, setEditingDestinationId] = useState<string | null>(null);
@@ -48,7 +49,7 @@ export function DestinationsSection({ tripId }: DestinationsSectionProps) {
     return () => {
       isMounted = false;
     };
-  }, [tripId]);
+  }, [tripId, tripService]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

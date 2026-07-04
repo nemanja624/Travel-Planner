@@ -16,7 +16,7 @@
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="GatewayPkg" ServiceManifestVersion="1.0.0" />
     <ConfigOverrides />
-    <EnvironmentOverrides CodePackageRef="code">
+    <EnvironmentOverrides CodePackageRef="Code">
       <EnvironmentVariable Name="ASPNETCORE_ENVIRONMENT" Value="[Gateway_ASPNETCORE_ENVIRONMENT]" />
     </EnvironmentOverrides>
   </ServiceManifestImport>

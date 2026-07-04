@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { ActivityStatus, ExpenseCategory, ShareAccessLevel, SharedTrip, Trip, TripFormData } from "../models";
-import { ApiError, sharingService } from "../services";
+import { ApiError, useServices } from "../services";
 import { TripForm } from "./TripForm";
 
 interface SharedTripPageProps {
@@ -29,6 +29,7 @@ const accessLabels: Record<ShareAccessLevel, string> = {
 };
 
 export function SharedTripPage({ token }: SharedTripPageProps) {
+  const { sharingService } = useServices();
   const [sharedTrip, setSharedTrip] = useState<SharedTrip | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
@@ -59,7 +60,7 @@ export function SharedTripPage({ token }: SharedTripPageProps) {
     return () => {
       isMounted = false;
     };
-  }, [token]);
+  }, [token, sharingService]);
 
   const activitiesByDate = useMemo(
     () => groupActivitiesByDate(sharedTrip?.activities ?? []),

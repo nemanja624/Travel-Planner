@@ -51,7 +51,7 @@ Klijent komunicira sa backendom preko `Gateway` REST API-ja. `Gateway` je statel
 
 ## Baza podataka
 
-Podrazumijevana konekcija u `Gateway/appsettings.json` koristi LocalDB:
+Podrazumijevane konekcije u `AuthService/appsettings.json` i `TripService/appsettings.json` koriste LocalDB:
 
 ```json
 Server=(localdb)\\MSSQLLocalDB;Database=TravelPlanner;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True
@@ -66,18 +66,17 @@ Migracije kreiraju tabele za korisnike, putovanja, destinacije, aktivnosti, tros
 
 ## Backend konfiguracija
 
-Glavna konfiguracija je u `Gateway/appsettings.json`.
+Konfiguracija je podijeljena po servisima:
 
 Bitna podesavanja:
 
+- `Gateway/appsettings.json` - JWT validacija i interni URL-ovi servisa
+- `AuthService/appsettings.json` - konekcija za korisnike i JWT izdavanje
+- `TripService/appsettings.json` - konekcija za planove i konfiguracija share linkova
 - `ConnectionStrings:TravelPlannerDatabase`
 - `ConnectionStrings:AuthDatabase`
-- `Jwt:Issuer`
-- `Jwt:Audience`
-- `Jwt:SigningKey`
-- `Jwt:ExpirationMinutes`
-- `ShareLinks:PublicBaseUrl`
-- `ShareLinks:QrCodeUrlTemplate`
+- `Jwt:Issuer`, `Jwt:Audience`, `Jwt:SigningKey`, `Jwt:ExpirationMinutes`
+- `ShareLinks:PublicBaseUrl`, `ShareLinks:QrCodeUrlTemplate`
 
 Za lokalni razvoj `ShareLinks:PublicBaseUrl` treba da pokazuje na frontend adresu, npr. `http://localhost:3000`.
 
@@ -107,10 +106,10 @@ Frontend se nalazi u `Client`.
 Primjer konfiguracije je u `Client/.env.example`:
 
 ```env
-VITE_API_BASE_URL=http://localhost:8080
+VITE_API_BASE_URL=http://localhost:8922
 ```
 
-Za lokalni rad napraviti ili provjeriti `Client/.env.development` sa istom vrijednoscu ako Gateway radi na portu `8080`.
+Za lokalni rad napraviti ili provjeriti `Client/.env.development` sa istom vrijednoscu ako Gateway radi na portu `8922`.
 
 ## Pokretanje frontenda
 
@@ -147,6 +146,11 @@ npm run build
 - Dijeljenje plana preko share linka i QR koda
 - VIEW share pristup za pregled plana
 - EDIT share pristup za izmjenu osnovnih podataka plana
+
+## Dokumentacija za predaju
+
+- `Diagrams/architecture.md` - dijagram arhitekture sistema
+- `Diagrams/use-cases.md` - Use Case dijagram
 
 ## Napomene za testiranje
 

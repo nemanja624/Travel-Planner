@@ -10,7 +10,7 @@ import {
   LoginRequest,
   RegisterUserRequest
 } from "../models";
-import { authService, tokenStorage } from "../services";
+import { useServices } from "../services";
 
 interface AuthContextValue {
   auth: AuthResponse | null;
@@ -23,6 +23,7 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: PropsWithChildren) {
+  const { authService, tokenStorage } = useServices();
   const [auth, setAuth] = useState<AuthResponse | null>(() => tokenStorage.getAuth());
 
   const value = useMemo<AuthContextValue>(
@@ -40,7 +41,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         setAuth(null);
       }
     }),
-    [auth]
+    [auth, authService, tokenStorage]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

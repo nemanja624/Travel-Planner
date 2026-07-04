@@ -22,6 +22,8 @@ namespace Gateway
     /// </summary>
     internal sealed class Gateway : StatelessService
     {
+        private const string ClientCorsPolicy = "ClientCorsPolicy";
+
         public Gateway(StatelessServiceContext context)
             : base(context)
         { }
@@ -53,6 +55,20 @@ namespace Gateway
                         builder.Services.AddHttpClient<AuthServiceHttpClient>();
                         builder.Services.AddHttpClient<TripServiceHttpClient>();
                         builder.Services.AddHttpContextAccessor();
+                        builder.Services.AddCors(options =>
+                        {
+                            options.AddPolicy(ClientCorsPolicy, policy =>
+                            {
+                                var allowedOrigins = builder.Configuration
+                                    .GetSection("Cors:AllowedOrigins")
+                                    .Get<string[]>() ?? [];
+
+                                policy
+                                    .WithOrigins(allowedOrigins)
+                                    .AllowAnyHeader()
+                                    .AllowAnyMethod();
+                            });
+                        });
                         builder.Services.AddSingleton(builder.Configuration.GetSection("Jwt").Get<JwtOptions>() ?? new JwtOptions());
                         builder.Services.AddScoped<IAccessTokenValidator, JwtAccessTokenValidator>();
                         builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
@@ -63,6 +79,7 @@ namespace Gateway
                         app.UseSwagger();
                         app.UseSwaggerUI();
                         }
+                        app.UseCors(ClientCorsPolicy);
                         app.UseAuthorization();
                         app.MapControllers();
                         

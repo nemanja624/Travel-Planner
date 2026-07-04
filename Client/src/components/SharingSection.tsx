@@ -1,6 +1,6 @@
 import { FormEvent, useState } from "react";
 import { ShareAccessLevel, ShareLink } from "../models";
-import { ApiError, sharingService } from "../services";
+import { ApiError, useServices } from "../services";
 
 interface SharingSectionProps {
   tripId: string;
@@ -12,6 +12,7 @@ const accessLabels: Record<ShareAccessLevel, string> = {
 };
 
 export function SharingSection({ tripId }: SharingSectionProps) {
+  const { sharingService } = useServices();
   const [accessLevel, setAccessLevel] = useState(ShareAccessLevel.View);
   const [expiresAtUtc, setExpiresAtUtc] = useState("");
   const [shareLink, setShareLink] = useState<ShareLink | null>(null);

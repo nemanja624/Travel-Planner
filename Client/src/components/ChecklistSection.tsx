@@ -1,12 +1,13 @@
 import { FormEvent, useEffect, useState } from "react";
 import { ChecklistItem } from "../models";
-import { ApiError, tripService } from "../services";
+import { ApiError, useServices } from "../services";
 
 interface ChecklistSectionProps {
   tripId: string;
 }
 
 export function ChecklistSection({ tripId }: ChecklistSectionProps) {
+  const { tripService } = useServices();
   const [items, setItems] = useState<ChecklistItem[]>([]);
   const [text, setText] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -39,7 +40,7 @@ export function ChecklistSection({ tripId }: ChecklistSectionProps) {
     return () => {
       isMounted = false;
     };
-  }, [tripId]);
+  }, [tripId, tripService]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

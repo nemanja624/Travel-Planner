@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Trip } from "../models";
-import { ApiError, tripService } from "../services";
+import { ApiError, useServices } from "../services";
 import { ActivitiesSection } from "./ActivitiesSection";
 import { ChecklistSection } from "./ChecklistSection";
 import { DestinationsSection } from "./DestinationsSection";
@@ -13,6 +13,7 @@ interface TripDetailsPageProps {
 }
 
 export function TripDetailsPage({ tripId, onBack }: TripDetailsPageProps) {
+  const { tripService } = useServices();
   const [trip, setTrip] = useState<Trip | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -42,7 +43,7 @@ export function TripDetailsPage({ tripId, onBack }: TripDetailsPageProps) {
     return () => {
       isMounted = false;
     };
-  }, [tripId]);
+  }, [tripId, tripService]);
 
   return (
     <section className="page-panel">

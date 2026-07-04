@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { ActivityStatus } from "../models";
 import { ActivityFormData, TripActivity } from "../models/trips";
-import { ApiError, tripService } from "../services";
+import { ApiError, useServices } from "../services";
 
 interface ActivitiesSectionProps {
   tripId: string;
@@ -25,6 +25,7 @@ const statusLabels: Record<ActivityStatus, string> = {
 };
 
 export function ActivitiesSection({ tripId }: ActivitiesSectionProps) {
+  const { tripService } = useServices();
   const [activities, setActivities] = useState<TripActivity[]>([]);
   const [form, setForm] = useState<ActivityFormData>(initialForm);
   const [editingActivityId, setEditingActivityId] = useState<string | null>(null);
@@ -58,7 +59,7 @@ export function ActivitiesSection({ tripId }: ActivitiesSectionProps) {
     return () => {
       isMounted = false;
     };
-  }, [tripId]);
+  }, [tripId, tripService]);
 
   const activityGroups = useMemo(() => groupActivitiesByDate(activities), [activities]);
 

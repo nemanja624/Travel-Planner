@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { User, UserRole } from "../models";
-import { adminUserService, ApiError } from "../services";
+import { ApiError, useServices } from "../services";
 
 interface AdminUsersPageProps {
   onBack: () => void;
@@ -12,6 +12,7 @@ const roleLabels: Record<UserRole, string> = {
 };
 
 export function AdminUsersPage({ onBack }: AdminUsersPageProps) {
+  const { adminUserService } = useServices();
   const [users, setUsers] = useState<User[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -42,7 +43,7 @@ export function AdminUsersPage({ onBack }: AdminUsersPageProps) {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [adminUserService]);
 
   async function updateRole(user: User, role: UserRole) {
     setError(null);
