@@ -36,6 +36,7 @@
            replicas of different partitions that are placed in your code. -->
       <Endpoint Protocol="http" Name="ServiceEndpoint" Type="Input" Port="8922" />
       <Endpoint Protocol="http" Name="AuthServiceEndpoint" Type="Internal" Port="8923" />
+      <Endpoint Protocol="http" Name="TripServiceEndpoint" Type="Internal" Port="8924" />
     </Endpoints>
   </Resources>
 </ServiceManifest>

@@ -6,19 +6,14 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AuthService.Core.Security;
-using AuthService.Core.Services;
-using AuthService.Data;
 using Gateway.Security;
 using Gateway.Services;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.ServiceFabric.Services.Communication.AspNetCore;
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
 using Microsoft.ServiceFabric.Data;
-using TripService.Core.Services;
-using TripService.Data;
 
 namespace Gateway
 {
@@ -56,20 +51,10 @@ namespace Gateway
                         builder.Services.AddEndpointsApiExplorer();
                         builder.Services.AddSwaggerGen();
                         builder.Services.AddHttpClient<AuthServiceHttpClient>();
-                        builder.Services.AddDbContext<TripDbContext>(options =>
-                            options.UseSqlServer(builder.Configuration.GetConnectionString("TravelPlannerDatabase")));
-                        builder.Services.AddDbContext<AuthDbContext>(options =>
-                            options.UseSqlServer(builder.Configuration.GetConnectionString("AuthDatabase")));
+                        builder.Services.AddHttpClient<TripServiceHttpClient>();
                         builder.Services.AddHttpContextAccessor();
-                        builder.Services.AddScoped<ITripPlannerService, TripPlannerService>();
-                        builder.Services.AddSingleton(builder.Configuration.GetSection("ShareLinks").Get<ShareLinkOptions>() ?? new ShareLinkOptions());
-                        builder.Services.AddScoped<IShareLinkService, ShareLinkService>();
-                        builder.Services.AddScoped<IPasswordHasher, BcryptPasswordHasher>();
                         builder.Services.AddSingleton(builder.Configuration.GetSection("Jwt").Get<JwtOptions>() ?? new JwtOptions());
-                        builder.Services.AddScoped<IAccessTokenService, JwtAccessTokenService>();
                         builder.Services.AddScoped<IAccessTokenValidator, JwtAccessTokenValidator>();
-                        builder.Services.AddScoped<IAuthService, AuthService.Core.Services.AuthService>();
-                        builder.Services.AddScoped<IAdminUserService, AdminUserService>();
                         builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
                         builder.Services.AddScoped<IRoleGuardService, RoleGuardService>();
                         var app = builder.Build();

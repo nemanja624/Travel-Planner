@@ -1,8 +1,7 @@
 using Contracts.Trips;
 using Gateway.Security;
+using Gateway.Services;
 using Microsoft.AspNetCore.Mvc;
-using TripService.Core.Common;
-using TripService.Core.Services;
 
 namespace Gateway.Controllers;
 
@@ -10,310 +9,128 @@ namespace Gateway.Controllers;
 [Route("api/trips")]
 public sealed class TripsController : ControllerBase
 {
-    private readonly ITripPlannerService tripPlannerService;
+    private readonly TripServiceHttpClient tripServiceHttpClient;
     private readonly ICurrentUserService currentUserService;
 
     public TripsController(
-        ITripPlannerService tripPlannerService,
+        TripServiceHttpClient tripServiceHttpClient,
         ICurrentUserService currentUserService)
     {
-        this.tripPlannerService = tripPlannerService;
+        this.tripServiceHttpClient = tripServiceHttpClient;
         this.currentUserService = currentUserService;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyCollection<TripSummaryDto>>> GetTrips(CancellationToken cancellationToken)
-    {
-        if (!TryGetOwnerId(out var ownerId))
-        {
-            return MissingUser();
-        }
-
-        var trips = await tripPlannerService.GetTripsAsync(ownerId, cancellationToken);
-        return Ok(trips);
-    }
+    public async Task<IActionResult> GetTrips(CancellationToken cancellationToken) =>
+        await WithOwner(ownerId => tripServiceHttpClient.GetTripsAsync(ownerId, cancellationToken));
 
     [HttpGet("{tripId:guid}")]
-    public async Task<ActionResult<TripDto>> GetTrip(Guid tripId, CancellationToken cancellationToken)
-    {
-        if (!TryGetOwnerId(out var ownerId))
-        {
-            return MissingUser();
-        }
-
-        return ToActionResult(await tripPlannerService.GetTripAsync(ownerId, tripId, cancellationToken));
-    }
+    public async Task<IActionResult> GetTrip(Guid tripId, CancellationToken cancellationToken) =>
+        await WithOwner(ownerId => tripServiceHttpClient.GetTripAsync(ownerId, tripId, cancellationToken));
 
     [HttpPost]
-    public async Task<ActionResult<TripDto>> CreateTrip(CreateTripRequest request, CancellationToken cancellationToken)
-    {
-        if (!TryGetOwnerId(out var ownerId))
-        {
-            return MissingUser();
-        }
-
-        var result = await tripPlannerService.CreateTripAsync(ownerId, request, cancellationToken);
-        if (!result.Succeeded || result.Value is null)
-        {
-            return BadRequest(new { error = result.Error });
-        }
-
-        return CreatedAtAction(nameof(GetTrip), new { tripId = result.Value.Id }, result.Value);
-    }
+    public async Task<IActionResult> CreateTrip(CreateTripRequest request, CancellationToken cancellationToken) =>
+        await WithOwner(ownerId => tripServiceHttpClient.CreateTripAsync(ownerId, request, cancellationToken));
 
     [HttpPut("{tripId:guid}")]
-    public async Task<ActionResult<TripDto>> UpdateTrip(Guid tripId, UpdateTripRequest request, CancellationToken cancellationToken)
-    {
-        if (!TryGetOwnerId(out var ownerId))
-        {
-            return MissingUser();
-        }
-
-        return ToActionResult(await tripPlannerService.UpdateTripAsync(ownerId, tripId, request, cancellationToken));
-    }
+    public async Task<IActionResult> UpdateTrip(Guid tripId, UpdateTripRequest request, CancellationToken cancellationToken) =>
+        await WithOwner(ownerId => tripServiceHttpClient.UpdateTripAsync(ownerId, tripId, request, cancellationToken));
 
     [HttpDelete("{tripId:guid}")]
-    public async Task<IActionResult> DeleteTrip(Guid tripId, CancellationToken cancellationToken)
-    {
-        if (!TryGetOwnerId(out var ownerId))
-        {
-            return MissingUser();
-        }
-
-        return ToActionResult(await tripPlannerService.DeleteTripAsync(ownerId, tripId, cancellationToken));
-    }
+    public async Task<IActionResult> DeleteTrip(Guid tripId, CancellationToken cancellationToken) =>
+        await WithOwner(ownerId => tripServiceHttpClient.DeleteTripAsync(ownerId, tripId, cancellationToken));
 
     [HttpGet("{tripId:guid}/destinations")]
-    public async Task<ActionResult<IReadOnlyCollection<DestinationDto>>> GetDestinations(Guid tripId, CancellationToken cancellationToken)
-    {
-        if (!TryGetOwnerId(out var ownerId))
-        {
-            return MissingUser();
-        }
-
-        return ToActionResult(await tripPlannerService.GetDestinationsAsync(ownerId, tripId, cancellationToken));
-    }
+    public async Task<IActionResult> GetDestinations(Guid tripId, CancellationToken cancellationToken) =>
+        await WithOwner(ownerId => tripServiceHttpClient.GetDestinationsAsync(ownerId, tripId, cancellationToken));
 
     [HttpPost("{tripId:guid}/destinations")]
-    public async Task<ActionResult<DestinationDto>> CreateDestination(Guid tripId, CreateDestinationRequest request, CancellationToken cancellationToken)
-    {
-        if (!TryGetOwnerId(out var ownerId))
-        {
-            return MissingUser();
-        }
-
-        return ToActionResult(await tripPlannerService.CreateDestinationAsync(ownerId, tripId, request, cancellationToken));
-    }
+    public async Task<IActionResult> CreateDestination(Guid tripId, CreateDestinationRequest request, CancellationToken cancellationToken) =>
+        await WithOwner(ownerId => tripServiceHttpClient.CreateDestinationAsync(ownerId, tripId, request, cancellationToken));
 
     [HttpPut("{tripId:guid}/destinations/{destinationId:guid}")]
-    public async Task<ActionResult<DestinationDto>> UpdateDestination(Guid tripId, Guid destinationId, UpdateDestinationRequest request, CancellationToken cancellationToken)
-    {
-        if (!TryGetOwnerId(out var ownerId))
-        {
-            return MissingUser();
-        }
-
-        return ToActionResult(await tripPlannerService.UpdateDestinationAsync(ownerId, tripId, destinationId, request, cancellationToken));
-    }
+    public async Task<IActionResult> UpdateDestination(Guid tripId, Guid destinationId, UpdateDestinationRequest request, CancellationToken cancellationToken) =>
+        await WithOwner(ownerId => tripServiceHttpClient.UpdateDestinationAsync(ownerId, tripId, destinationId, request, cancellationToken));
 
     [HttpDelete("{tripId:guid}/destinations/{destinationId:guid}")]
-    public async Task<IActionResult> DeleteDestination(Guid tripId, Guid destinationId, CancellationToken cancellationToken)
-    {
-        if (!TryGetOwnerId(out var ownerId))
-        {
-            return MissingUser();
-        }
-
-        return ToActionResult(await tripPlannerService.DeleteDestinationAsync(ownerId, tripId, destinationId, cancellationToken));
-    }
+    public async Task<IActionResult> DeleteDestination(Guid tripId, Guid destinationId, CancellationToken cancellationToken) =>
+        await WithOwner(ownerId => tripServiceHttpClient.DeleteDestinationAsync(ownerId, tripId, destinationId, cancellationToken));
 
     [HttpGet("{tripId:guid}/activities")]
-    public async Task<ActionResult<IReadOnlyCollection<ActivityDto>>> GetActivities(Guid tripId, CancellationToken cancellationToken)
-    {
-        if (!TryGetOwnerId(out var ownerId))
-        {
-            return MissingUser();
-        }
-
-        return ToActionResult(await tripPlannerService.GetActivitiesAsync(ownerId, tripId, cancellationToken));
-    }
+    public async Task<IActionResult> GetActivities(Guid tripId, CancellationToken cancellationToken) =>
+        await WithOwner(ownerId => tripServiceHttpClient.GetActivitiesAsync(ownerId, tripId, cancellationToken));
 
     [HttpPost("{tripId:guid}/activities")]
-    public async Task<ActionResult<ActivityDto>> CreateActivity(Guid tripId, CreateActivityRequest request, CancellationToken cancellationToken)
-    {
-        if (!TryGetOwnerId(out var ownerId))
-        {
-            return MissingUser();
-        }
-
-        return ToActionResult(await tripPlannerService.CreateActivityAsync(ownerId, tripId, request, cancellationToken));
-    }
+    public async Task<IActionResult> CreateActivity(Guid tripId, CreateActivityRequest request, CancellationToken cancellationToken) =>
+        await WithOwner(ownerId => tripServiceHttpClient.CreateActivityAsync(ownerId, tripId, request, cancellationToken));
 
     [HttpPut("{tripId:guid}/activities/{activityId:guid}")]
-    public async Task<ActionResult<ActivityDto>> UpdateActivity(Guid tripId, Guid activityId, UpdateActivityRequest request, CancellationToken cancellationToken)
-    {
-        if (!TryGetOwnerId(out var ownerId))
-        {
-            return MissingUser();
-        }
-
-        return ToActionResult(await tripPlannerService.UpdateActivityAsync(ownerId, tripId, activityId, request, cancellationToken));
-    }
+    public async Task<IActionResult> UpdateActivity(Guid tripId, Guid activityId, UpdateActivityRequest request, CancellationToken cancellationToken) =>
+        await WithOwner(ownerId => tripServiceHttpClient.UpdateActivityAsync(ownerId, tripId, activityId, request, cancellationToken));
 
     [HttpDelete("{tripId:guid}/activities/{activityId:guid}")]
-    public async Task<IActionResult> DeleteActivity(Guid tripId, Guid activityId, CancellationToken cancellationToken)
-    {
-        if (!TryGetOwnerId(out var ownerId))
-        {
-            return MissingUser();
-        }
-
-        return ToActionResult(await tripPlannerService.DeleteActivityAsync(ownerId, tripId, activityId, cancellationToken));
-    }
+    public async Task<IActionResult> DeleteActivity(Guid tripId, Guid activityId, CancellationToken cancellationToken) =>
+        await WithOwner(ownerId => tripServiceHttpClient.DeleteActivityAsync(ownerId, tripId, activityId, cancellationToken));
 
     [HttpGet("{tripId:guid}/expenses")]
-    public async Task<ActionResult<IReadOnlyCollection<ExpenseDto>>> GetExpenses(Guid tripId, CancellationToken cancellationToken)
-    {
-        if (!TryGetOwnerId(out var ownerId))
-        {
-            return MissingUser();
-        }
-
-        return ToActionResult(await tripPlannerService.GetExpensesAsync(ownerId, tripId, cancellationToken));
-    }
+    public async Task<IActionResult> GetExpenses(Guid tripId, CancellationToken cancellationToken) =>
+        await WithOwner(ownerId => tripServiceHttpClient.GetExpensesAsync(ownerId, tripId, cancellationToken));
 
     [HttpPost("{tripId:guid}/expenses")]
-    public async Task<ActionResult<ExpenseDto>> CreateExpense(Guid tripId, CreateExpenseRequest request, CancellationToken cancellationToken)
-    {
-        if (!TryGetOwnerId(out var ownerId))
-        {
-            return MissingUser();
-        }
-
-        return ToActionResult(await tripPlannerService.CreateExpenseAsync(ownerId, tripId, request, cancellationToken));
-    }
+    public async Task<IActionResult> CreateExpense(Guid tripId, CreateExpenseRequest request, CancellationToken cancellationToken) =>
+        await WithOwner(ownerId => tripServiceHttpClient.CreateExpenseAsync(ownerId, tripId, request, cancellationToken));
 
     [HttpPut("{tripId:guid}/expenses/{expenseId:guid}")]
-    public async Task<ActionResult<ExpenseDto>> UpdateExpense(Guid tripId, Guid expenseId, UpdateExpenseRequest request, CancellationToken cancellationToken)
-    {
-        if (!TryGetOwnerId(out var ownerId))
-        {
-            return MissingUser();
-        }
-
-        return ToActionResult(await tripPlannerService.UpdateExpenseAsync(ownerId, tripId, expenseId, request, cancellationToken));
-    }
+    public async Task<IActionResult> UpdateExpense(Guid tripId, Guid expenseId, UpdateExpenseRequest request, CancellationToken cancellationToken) =>
+        await WithOwner(ownerId => tripServiceHttpClient.UpdateExpenseAsync(ownerId, tripId, expenseId, request, cancellationToken));
 
     [HttpDelete("{tripId:guid}/expenses/{expenseId:guid}")]
-    public async Task<IActionResult> DeleteExpense(Guid tripId, Guid expenseId, CancellationToken cancellationToken)
-    {
-        if (!TryGetOwnerId(out var ownerId))
-        {
-            return MissingUser();
-        }
-
-        return ToActionResult(await tripPlannerService.DeleteExpenseAsync(ownerId, tripId, expenseId, cancellationToken));
-    }
+    public async Task<IActionResult> DeleteExpense(Guid tripId, Guid expenseId, CancellationToken cancellationToken) =>
+        await WithOwner(ownerId => tripServiceHttpClient.DeleteExpenseAsync(ownerId, tripId, expenseId, cancellationToken));
 
     [HttpGet("{tripId:guid}/budget")]
-    public async Task<ActionResult<BudgetSummaryDto>> GetBudget(Guid tripId, CancellationToken cancellationToken)
-    {
-        if (!TryGetOwnerId(out var ownerId))
-        {
-            return MissingUser();
-        }
-
-        return ToActionResult(await tripPlannerService.GetBudgetSummaryAsync(ownerId, tripId, cancellationToken));
-    }
+    public async Task<IActionResult> GetBudget(Guid tripId, CancellationToken cancellationToken) =>
+        await WithOwner(ownerId => tripServiceHttpClient.GetBudgetAsync(ownerId, tripId, cancellationToken));
 
     [HttpGet("{tripId:guid}/checklist-items")]
-    public async Task<ActionResult<IReadOnlyCollection<ChecklistItemDto>>> GetChecklistItems(Guid tripId, CancellationToken cancellationToken)
-    {
-        if (!TryGetOwnerId(out var ownerId))
-        {
-            return MissingUser();
-        }
-
-        return ToActionResult(await tripPlannerService.GetChecklistItemsAsync(ownerId, tripId, cancellationToken));
-    }
+    public async Task<IActionResult> GetChecklistItems(Guid tripId, CancellationToken cancellationToken) =>
+        await WithOwner(ownerId => tripServiceHttpClient.GetChecklistItemsAsync(ownerId, tripId, cancellationToken));
 
     [HttpPost("{tripId:guid}/checklist-items")]
-    public async Task<ActionResult<ChecklistItemDto>> CreateChecklistItem(Guid tripId, CreateChecklistItemRequest request, CancellationToken cancellationToken)
-    {
-        if (!TryGetOwnerId(out var ownerId))
-        {
-            return MissingUser();
-        }
-
-        return ToActionResult(await tripPlannerService.CreateChecklistItemAsync(ownerId, tripId, request, cancellationToken));
-    }
+    public async Task<IActionResult> CreateChecklistItem(Guid tripId, CreateChecklistItemRequest request, CancellationToken cancellationToken) =>
+        await WithOwner(ownerId => tripServiceHttpClient.CreateChecklistItemAsync(ownerId, tripId, request, cancellationToken));
 
     [HttpPut("{tripId:guid}/checklist-items/{itemId:guid}")]
-    public async Task<ActionResult<ChecklistItemDto>> UpdateChecklistItem(Guid tripId, Guid itemId, UpdateChecklistItemRequest request, CancellationToken cancellationToken)
-    {
-        if (!TryGetOwnerId(out var ownerId))
-        {
-            return MissingUser();
-        }
-
-        return ToActionResult(await tripPlannerService.UpdateChecklistItemAsync(ownerId, tripId, itemId, request, cancellationToken));
-    }
+    public async Task<IActionResult> UpdateChecklistItem(Guid tripId, Guid itemId, UpdateChecklistItemRequest request, CancellationToken cancellationToken) =>
+        await WithOwner(ownerId => tripServiceHttpClient.UpdateChecklistItemAsync(ownerId, tripId, itemId, request, cancellationToken));
 
     [HttpDelete("{tripId:guid}/checklist-items/{itemId:guid}")]
-    public async Task<IActionResult> DeleteChecklistItem(Guid tripId, Guid itemId, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteChecklistItem(Guid tripId, Guid itemId, CancellationToken cancellationToken) =>
+        await WithOwner(ownerId => tripServiceHttpClient.DeleteChecklistItemAsync(ownerId, tripId, itemId, cancellationToken));
+
+    private async Task<IActionResult> WithOwner(Func<Guid, Task<HttpResponseMessage>> requestFactory)
     {
-        if (!TryGetOwnerId(out var ownerId))
-        {
-            return MissingUser();
-        }
-
-        return ToActionResult(await tripPlannerService.DeleteChecklistItemAsync(ownerId, tripId, itemId, cancellationToken));
-    }
-
-    private bool TryGetOwnerId(out Guid ownerId)
-    {
-        ownerId = Guid.Empty;
-
         if (!currentUserService.TryGetCurrentUser(out var user))
         {
-            return false;
+            return Unauthorized(new { error = "Missing or invalid access token." });
         }
 
-        ownerId = user.Id;
-        return true;
+        return await ToProxyResult(await requestFactory(user.Id));
     }
 
-    private UnauthorizedObjectResult MissingUser()
+    private static async Task<IActionResult> ToProxyResult(HttpResponseMessage response)
     {
-        return Unauthorized(new { error = "Missing or invalid access token." });
-    }
-
-    private ActionResult<T> ToActionResult<T>(ServiceResult<T> result)
-    {
-        if (result.Succeeded && result.Value is not null)
+        if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
         {
-            return Ok(result.Value);
+            return new StatusCodeResult(StatusCodes.Status204NoContent);
         }
 
-        return IsNotFound(result.Error)
-            ? NotFound(new { error = result.Error }) // 404 Not Found
-            : BadRequest(new { error = result.Error }); // 400 Bad Request
-    }
-
-    private IActionResult ToActionResult(ServiceResult result)
-    {
-        if (result.Succeeded)
+        var content = await response.Content.ReadAsStringAsync();
+        return new ContentResult
         {
-            return NoContent();
-        }
-
-        return IsNotFound(result.Error)
-            ? NotFound(new { error = result.Error })
-            : BadRequest(new { error = result.Error });
-    }
-
-    private static bool IsNotFound(string? error)
-    {
-        return error?.Contains("not found", StringComparison.OrdinalIgnoreCase) == true;
+            Content = content,
+            ContentType = "application/json",
+            StatusCode = (int)response.StatusCode
+        };
     }
 }

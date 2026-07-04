@@ -33,7 +33,7 @@ Travel Planner je web aplikacija za planiranje putovanja. Sistem podrzava planov
 | `Contracts` | Class library | DTO modeli i enum-i koje koriste backend slojevi |
 | `Client` | React + TypeScript + Vite | Frontend aplikacija |
 
-Klijent komunicira sa backendom preko `Gateway` REST API-ja. `Gateway` je stateless servis, dok su `AuthService` i `TripService` stateful Service Fabric servisi. DTO modeli su odvojeni od modela baze, a mapiranje se nalazi u data/core slojevima.
+Klijent komunicira sa backendom preko `Gateway` REST API-ja. `Gateway` je stateless servis, dok su `AuthService` i `TripService` stateful Service Fabric servisi. Gateway prosljedjuje zahtjeve ka internim HTTP endpointima stateful servisa. DTO modeli su odvojeni od modela baze, a mapiranje se nalazi u data/core slojevima.
 
 ## Struktura projekta
 

@@ -1,8 +1,7 @@
 using Contracts.Sharing;
 using Gateway.Security;
+using Gateway.Services;
 using Microsoft.AspNetCore.Mvc;
-using TripService.Core.Common;
-using TripService.Core.Services;
 
 namespace Gateway.Controllers;
 
@@ -10,38 +9,36 @@ namespace Gateway.Controllers;
 [Route("api/share-links")]
 public sealed class ShareLinksController : ControllerBase
 {
-    private readonly IShareLinkService shareLinkService;
+    private readonly TripServiceHttpClient tripServiceHttpClient;
     private readonly ICurrentUserService currentUserService;
 
     public ShareLinksController(
-        IShareLinkService shareLinkService,
+        TripServiceHttpClient tripServiceHttpClient,
         ICurrentUserService currentUserService)
     {
-        this.shareLinkService = shareLinkService;
+        this.tripServiceHttpClient = tripServiceHttpClient;
         this.currentUserService = currentUserService;
     }
 
     [HttpPost]
-    public async Task<ActionResult<ShareLinkDto>> CreateShareLink(CreateShareLinkRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateShareLink(CreateShareLinkRequest request, CancellationToken cancellationToken)
     {
         if (!currentUserService.TryGetCurrentUser(out var user))
         {
             return Unauthorized(new { error = "Missing or invalid access token." });
         }
 
-        var result = await shareLinkService.CreateShareLinkAsync(user.Id, request, cancellationToken);
-        if (!result.Succeeded || result.Value is null)
-        {
-            return IsNotFound(result.Error)
-                ? NotFound(new { error = result.Error })
-                : BadRequest(new { error = result.Error });
-        }
-
-        return Ok(result.Value);
+        return await ToProxyResult(await tripServiceHttpClient.CreateShareLinkAsync(user.Id, request, cancellationToken));
     }
 
-    private static bool IsNotFound(string? error)
+    private static async Task<IActionResult> ToProxyResult(HttpResponseMessage response)
     {
-        return error?.Contains("not found", StringComparison.OrdinalIgnoreCase) == true;
+        var content = await response.Content.ReadAsStringAsync();
+        return new ContentResult
+        {
+            Content = content,
+            ContentType = "application/json",
+            StatusCode = (int)response.StatusCode
+        };
     }
 }

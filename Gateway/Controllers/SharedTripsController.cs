@@ -1,7 +1,6 @@
-using Contracts.Sharing;
 using Contracts.Trips;
+using Gateway.Services;
 using Microsoft.AspNetCore.Mvc;
-using TripService.Core.Services;
 
 namespace Gateway.Controllers;
 
@@ -9,36 +8,33 @@ namespace Gateway.Controllers;
 [Route("api/shared-trips")]
 public sealed class SharedTripsController : ControllerBase
 {
-    private readonly IShareLinkService shareLinkService;
+    private readonly TripServiceHttpClient tripServiceHttpClient;
 
-    public SharedTripsController(IShareLinkService shareLinkService)
+    public SharedTripsController(TripServiceHttpClient tripServiceHttpClient)
     {
-        this.shareLinkService = shareLinkService;
+        this.tripServiceHttpClient = tripServiceHttpClient;
     }
 
     [HttpGet("{token}")]
-    public async Task<ActionResult<SharedTripDto>> GetSharedTrip(string token, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetSharedTrip(string token, CancellationToken cancellationToken)
     {
-        var result = await shareLinkService.GetSharedTripAsync(token, cancellationToken);
-        if (!result.Succeeded || result.Value is null)
-        {
-            return BadRequest(new { error = result.Error });
-        }
-
-        return Ok(result.Value);
+        return await ToProxyResult(await tripServiceHttpClient.GetSharedTripAsync(token, cancellationToken));
     }
 
     [HttpPut("{token}/trip")]
-    public async Task<ActionResult<TripDto>> UpdateSharedTrip(string token, UpdateTripRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateSharedTrip(string token, UpdateTripRequest request, CancellationToken cancellationToken)
     {
-        var result = await shareLinkService.UpdateSharedTripAsync(token, request, cancellationToken);
-        if (!result.Succeeded || result.Value is null)
-        {
-            return result.Error?.Contains("does not allow editing", StringComparison.OrdinalIgnoreCase) == true
-                ? StatusCode(StatusCodes.Status403Forbidden, new { error = result.Error }) // ako greska sadrzi "does not allow editing", vrati 403 Forbidden
-                : BadRequest(new { error = result.Error }); // ako ne sadrzi onda vrati 400 Bad Request
-        }
+        return await ToProxyResult(await tripServiceHttpClient.UpdateSharedTripAsync(token, request, cancellationToken));
+    }
 
-        return Ok(result.Value);
+    private static async Task<IActionResult> ToProxyResult(HttpResponseMessage response)
+    {
+        var content = await response.Content.ReadAsStringAsync();
+        return new ContentResult
+        {
+            Content = content,
+            ContentType = "application/json",
+            StatusCode = (int)response.StatusCode
+        };
     }
 }
