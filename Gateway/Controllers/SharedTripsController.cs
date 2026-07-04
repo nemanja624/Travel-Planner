@@ -1,4 +1,5 @@
 using Contracts.Sharing;
+using Contracts.Trips;
 using Microsoft.AspNetCore.Mvc;
 using TripService.Core.Services;
 
@@ -22,6 +23,20 @@ public sealed class SharedTripsController : ControllerBase
         if (!result.Succeeded || result.Value is null)
         {
             return BadRequest(new { error = result.Error });
+        }
+
+        return Ok(result.Value);
+    }
+
+    [HttpPut("{token}/trip")]
+    public async Task<ActionResult<TripDto>> UpdateSharedTrip(string token, UpdateTripRequest request, CancellationToken cancellationToken)
+    {
+        var result = await shareLinkService.UpdateSharedTripAsync(token, request, cancellationToken);
+        if (!result.Succeeded || result.Value is null)
+        {
+            return result.Error?.Contains("does not allow editing", StringComparison.OrdinalIgnoreCase) == true
+                ? StatusCode(StatusCodes.Status403Forbidden, new { error = result.Error }) // ako greska sadrzi "does not allow editing", vrati 403 Forbidden
+                : BadRequest(new { error = result.Error }); // ako ne sadrzi onda vrati 400 Bad Request
         }
 
         return Ok(result.Value);

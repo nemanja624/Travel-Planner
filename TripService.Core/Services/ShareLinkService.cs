@@ -1,5 +1,7 @@
 using System.Security.Cryptography;
+using Contracts.Common;
 using Contracts.Sharing;
+using Contracts.Trips;
 using Microsoft.EntityFrameworkCore;
 using TripService.Core.Common;
 using TripService.Data;
@@ -91,6 +93,32 @@ public sealed class ShareLinkService : IShareLinkService
             shareLink.AccessLevel));
     }
 
+    public async Task<ServiceResult<TripDto>> UpdateSharedTripAsync(string token, UpdateTripRequest request, CancellationToken cancellationToken = default)
+    {
+        var validationError = ValidateTripDatesAndBudget(request.StartDate, request.EndDate, request.PlannedBudget);
+        if (validationError is not null)
+        {
+            return ServiceResult<TripDto>.Failure(validationError);
+        }
+
+        var shareLinkResult = await FindValidShareLinkAsync(token, cancellationToken);
+        if (!shareLinkResult.Succeeded || shareLinkResult.Value is null)
+        {
+            return ServiceResult<TripDto>.Failure(shareLinkResult.Error ?? "Share token is invalid.");
+        }
+
+        var shareLink = shareLinkResult.Value;
+        if (shareLink.AccessLevel != ShareAccessLevel.Edit)
+        {
+            return ServiceResult<TripDto>.Failure("Share token does not allow editing.");
+        }
+
+        request.Apply(shareLink.Trip!); // azuriranje trip-a na osnovu request-a, menja trip sa novim vrednostima
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        return ServiceResult<TripDto>.Success(shareLink.Trip!.ToDto()); // konvertuj trip u DTO i vrati ga kao rezultat
+    }
+
     private ShareLinkDto ToDto(ShareLink shareLink, string token)
     {
         var shareUrl = BuildShareUrl(token);
@@ -124,6 +152,47 @@ public sealed class ShareLinkService : IShareLinkService
     private static string HashToken(string token)
     {
         return Convert.ToHexString(SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(token)));
+    }
+
+    private async Task<ServiceResult<ShareLink>> FindValidShareLinkAsync(string token, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            return ServiceResult<ShareLink>.Failure("Share token is required.");
+        }
+
+        var tokenHash = HashToken(token.Trim());
+        var shareLink = await dbContext.ShareLinks
+            .Include(link => link.Trip)
+                .ThenInclude(trip => trip!.Expenses)
+            .FirstOrDefaultAsync(link => link.TokenHash == tokenHash, cancellationToken);
+
+        if (shareLink is null || shareLink.Trip is null || shareLink.RevokedAtUtc is not null)
+        {
+            return ServiceResult<ShareLink>.Failure("Share token is invalid.");
+        }
+
+        if (shareLink.ExpiresAtUtc <= DateTime.UtcNow)
+        {
+            return ServiceResult<ShareLink>.Failure("Share token has expired.");
+        }
+
+        return ServiceResult<ShareLink>.Success(shareLink);
+    }
+
+    private static string? ValidateTripDatesAndBudget(DateOnly startDate, DateOnly endDate, decimal plannedBudget)
+    {
+        if (endDate < startDate)
+        {
+            return "End date cannot be before start date.";
+        }
+
+        if (plannedBudget < 0)
+        {
+            return "Planned budget cannot be negative.";
+        }
+
+        return null;
     }
 
     private static string Base64UrlEncode(byte[] bytes)
