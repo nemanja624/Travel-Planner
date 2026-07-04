@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { AuthPanel } from "./components/AuthPanel";
+import { SharedTripPage } from "./components/SharedTripPage";
 import { TripDetailsPage } from "./components/TripDetailsPage";
 import { TripListPage } from "./components/TripListPage";
 import { environment } from "./config/environment";
@@ -8,6 +9,7 @@ import { useAuth } from "./state";
 export function App() {
   const { auth, isAuthenticated, logout } = useAuth();
   const [selectedTripId, setSelectedTripId] = useState<string | null>(null);
+  const sharedToken = getSharedToken();
 
   function handleLogout() {
     setSelectedTripId(null);
@@ -17,7 +19,9 @@ export function App() {
   return (
     <main className="app-shell">
       <section className="workspace">
-        {isAuthenticated && auth && selectedTripId ? (
+        {sharedToken ? (
+          <SharedTripPage token={sharedToken} />
+        ) : isAuthenticated && auth && selectedTripId ? (
           <TripDetailsPage tripId={selectedTripId} onBack={() => setSelectedTripId(null)} />
         ) : isAuthenticated && auth ? (
           <TripListPage userEmail={auth.email} onLogout={handleLogout} onOpenTrip={setSelectedTripId} />
@@ -35,4 +39,9 @@ export function App() {
       </section>
     </main>
   );
+}
+
+function getSharedToken() {
+  const [, prefix, token] = window.location.pathname.split("/");
+  return prefix === "shared" && token ? decodeURIComponent(token) : null;
 }
