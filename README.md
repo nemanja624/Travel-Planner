@@ -9,6 +9,30 @@ Travel Planner je web aplikacija za planiranje putovanja. Sistem podrzava planov
 - Frontend: React, TypeScript, Vite
 - Autentikacija: JWT tokeni, bcrypt hesiranje lozinki
 
+## Preduslovi
+
+- Windows
+- Visual Studio sa Service Fabric alatima
+- Service Fabric SDK i lokalni klaster
+- .NET 8 SDK
+- Microsoft SQL Server LocalDB ili SQL Server
+- Node.js 18+
+- npm
+
+## Arhitektura
+
+| Komponenta | Tip | Uloga |
+| --- | --- | --- |
+| `Gateway` | Service Fabric stateless ASP.NET Core servis | Javni REST API, autentikacija zahtjeva, autorizacija, pozivi ka core servisima |
+| `AuthService.Core` | Class library | Registracija, login, bcrypt hesiranje lozinki, JWT tokeni, admin logika |
+| `AuthService.Data` | Class library | `User` model i `AuthDbContext` |
+| `TripService.Core` | Class library | Poslovna logika za planove, destinacije, aktivnosti, troskove, checklistu i share linkove |
+| `TripService.Data` | Class library | Modeli putovanja i `TripDbContext` |
+| `Contracts` | Class library | DTO modeli i enum-i koje koriste backend slojevi |
+| `Client` | React + TypeScript + Vite | Frontend aplikacija |
+
+Klijent komunicira sa backendom preko `Gateway` REST API-ja. DTO modeli su odvojeni od modela baze, a mapiranje se nalazi u data/core slojevima.
+
 ## Struktura projekta
 
 - `Contracts` - DTO modeli i zajednicki enum-i
@@ -63,6 +87,8 @@ Backend se pokrece kroz Visual Studio kao Service Fabric aplikacija.
 4. Pokrenuti Service Fabric aplikaciju iz Visual Studio-a.
 
 API Gateway je konfigurisan da frontend koristi adresu iz `.env` fajla.
+
+Napomena: za Service Fabric lokalni razvoj najcesce je potrebno da je lokalni klaster pokrenut i da se Visual Studio pokrene kao administrator.
 
 Za provjeru build-a:
 
@@ -131,3 +157,21 @@ Preporuceni redoslijed rucne provjere:
 7. Kreiranje EDIT share linka i izmjena osnovnih podataka plana.
 8. Logovanje admin korisnika i provjera administracije korisnika.
 
+## Lokalni admin korisnik
+
+Registracija kroz aplikaciju kreira korisnika sa ulogom `User`. Za lokalno testiranje admin ekrana moze se registrovanom korisniku rucno promijeniti uloga u bazi:
+
+```sql
+UPDATE [dbo].[Users]
+SET [Role] = 'Admin'
+WHERE [Email] = 'admin@example.com';
+```
+
+Nakon toga se treba ponovo ulogovati da bi novi JWT token imao admin ulogu.
+
+## Napomene
+
+- `Client/.env.development` i `Client/.env.example` drze URL backend-a kroz `VITE_API_BASE_URL`.
+- `Gateway/appsettings.json` drzi konekcione stringove, JWT konfiguraciju i share link konfiguraciju.
+- `node_modules`, build output i lokalni fajlovi ne treba da se komituju.
+- `dotnet build TravelPlanner.sln` moze pokusati restore i citanje korisnickog NuGet config-a; za brzu lokalnu provjeru nakon restore-a moze se koristiti `dotnet build TravelPlanner.sln --no-restore`.
