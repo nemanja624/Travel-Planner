@@ -21,12 +21,12 @@
       </StatelessService>
     </Service>
     <Service Name="AuthService" ServicePackageActivationMode="ExclusiveProcess">
-      <StatefulService ServiceTypeName="AuthStatefulServiceType" TargetReplicaSetSize="[AuthService_TargetReplicaSetSize]" MinReplicaSetSize="[AuthService_MinReplicaSetSize]">
+      <StatefulService ServiceTypeName="AuthServiceType" TargetReplicaSetSize="[AuthService_TargetReplicaSetSize]" MinReplicaSetSize="[AuthService_MinReplicaSetSize]">
         <UniformInt64Partition PartitionCount="[AuthService_PartitionCount]" LowKey="0" HighKey="0" />
       </StatefulService>
     </Service>
     <Service Name="TripService" ServicePackageActivationMode="ExclusiveProcess">
-      <StatefulService ServiceTypeName="TripStatefulServiceType" TargetReplicaSetSize="[TripService_TargetReplicaSetSize]" MinReplicaSetSize="[TripService_MinReplicaSetSize]">
+      <StatefulService ServiceTypeName="TripServiceType" TargetReplicaSetSize="[TripService_TargetReplicaSetSize]" MinReplicaSetSize="[TripService_MinReplicaSetSize]">
         <UniformInt64Partition PartitionCount="[TripService_PartitionCount]" LowKey="0" HighKey="0" />
       </StatefulService>
     </Service>

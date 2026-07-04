@@ -12,7 +12,7 @@ using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
 using System.Fabric;
 
-namespace Gateway;
+namespace AuthService;
 
 internal sealed class AuthStatefulService : StatefulService
 {
@@ -28,8 +28,6 @@ internal sealed class AuthStatefulService : StatefulService
             new ServiceReplicaListener(serviceContext =>
                 new KestrelCommunicationListener(serviceContext, "AuthServiceEndpoint", (url, listener) =>
                 {
-                    ServiceEventSource.Current.ServiceMessage(serviceContext, $"Starting Auth service on {url}");
-
                     var builder = WebApplication.CreateBuilder();
                     builder.Services.AddSingleton<StatefulServiceContext>(serviceContext);
                     builder.WebHost

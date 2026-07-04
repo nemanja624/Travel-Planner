@@ -12,12 +12,12 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.ServiceFabric.AspNetCore.Kestrel" Version="8.5.116" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AuthService.Core\AuthService.Core.csproj" />
     <ProjectReference Include="..\Contracts\Contracts.csproj" />
+    <ProjectReference Include="..\TripService.Core\TripService.Core.csproj" />
+    <ProjectReference Include="..\TripService.Data\TripService.Data.csproj" />
   </ItemGroup>
 
 </Project>

@@ -20,6 +20,14 @@
       <EnvironmentVariable Name="ASPNETCORE_ENVIRONMENT" Value="[Gateway_ASPNETCORE_ENVIRONMENT]" />
     </EnvironmentOverrides>
   </ServiceManifestImport>
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="AuthServicePkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides />
+  </ServiceManifestImport>
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="TripServicePkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides />
+  </ServiceManifestImport>
   <DefaultServices>
     <Service Name="Gateway" ServicePackageActivationMode="ExclusiveProcess">
       <StatelessService ServiceTypeName="GatewayType" InstanceCount="[Gateway_InstanceCount]">
@@ -27,12 +35,12 @@
       </StatelessService>
     </Service>
     <Service Name="AuthService" ServicePackageActivationMode="ExclusiveProcess">
-      <StatefulService ServiceTypeName="AuthStatefulServiceType" TargetReplicaSetSize="[AuthService_TargetReplicaSetSize]" MinReplicaSetSize="[AuthService_MinReplicaSetSize]">
+      <StatefulService ServiceTypeName="AuthServiceType" TargetReplicaSetSize="[AuthService_TargetReplicaSetSize]" MinReplicaSetSize="[AuthService_MinReplicaSetSize]">
         <UniformInt64Partition PartitionCount="[AuthService_PartitionCount]" LowKey="0" HighKey="0" />
       </StatefulService>
     </Service>
     <Service Name="TripService" ServicePackageActivationMode="ExclusiveProcess">
-      <StatefulService ServiceTypeName="TripStatefulServiceType" TargetReplicaSetSize="[TripService_TargetReplicaSetSize]" MinReplicaSetSize="[TripService_MinReplicaSetSize]">
+      <StatefulService ServiceTypeName="TripServiceType" TargetReplicaSetSize="[TripService_TargetReplicaSetSize]" MinReplicaSetSize="[TripService_MinReplicaSetSize]">
         <UniformInt64Partition PartitionCount="[TripService_PartitionCount]" LowKey="0" HighKey="0" />
       </StatefulService>
     </Service>

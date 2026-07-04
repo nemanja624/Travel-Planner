@@ -24,8 +24,8 @@ Travel Planner je web aplikacija za planiranje putovanja. Sistem podrzava planov
 | Komponenta | Tip | Uloga |
 | --- | --- | --- |
 | `Gateway` | Service Fabric stateless ASP.NET Core servis | Javni REST API, autentikacija zahtjeva, autorizacija, pozivi ka core servisima |
-| `AuthService` | Service Fabric stateful servis | Logicki servis za korisnike i autentikaciju |
-| `TripService` | Service Fabric stateful servis | Logicki servis za putovanja, planove, budzet i dijeljenje |
+| `AuthService` | Service Fabric stateful host servis | Interni HTTP servis za korisnike i autentikaciju |
+| `TripService` | Service Fabric stateful host servis | Interni HTTP servis za putovanja, planove, budzet i dijeljenje |
 | `AuthService.Core` | Class library | Registracija, login, bcrypt hesiranje lozinki, JWT tokeni, admin logika |
 | `AuthService.Data` | Class library | `User` model i `AuthDbContext` |
 | `TripService.Core` | Class library | Poslovna logika za planove, destinacije, aktivnosti, troskove, checklistu i share linkove |
@@ -40,8 +40,10 @@ Klijent komunicira sa backendom preko `Gateway` REST API-ja. `Gateway` je statel
 - `Contracts` - DTO modeli i zajednicki enum-i
 - `AuthService.Data` - modeli i DbContext za korisnike
 - `AuthService.Core` - autentikacija, JWT i admin logika
+- `AuthService` - Service Fabric stateful host za auth logiku
 - `TripService.Data` - modeli i DbContext za putovanja
 - `TripService.Core` - poslovna logika za putovanja i share linkove
+- `TripService` - Service Fabric stateful host za trip logiku
 - `Gateway` - REST API kontroleri
 - `TravelPlanner` - Service Fabric aplikacija
 - `Client` - React frontend

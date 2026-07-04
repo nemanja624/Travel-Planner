@@ -11,7 +11,7 @@ using TripService.Core.Common;
 using TripService.Core.Services;
 using TripService.Data;
 
-namespace Gateway;
+namespace TripService;
 
 internal sealed class TripStatefulService : StatefulService
 {
@@ -27,8 +27,6 @@ internal sealed class TripStatefulService : StatefulService
             new ServiceReplicaListener(serviceContext =>
                 new KestrelCommunicationListener(serviceContext, "TripServiceEndpoint", (url, listener) =>
                 {
-                    ServiceEventSource.Current.ServiceMessage(serviceContext, $"Starting Trip service on {url}");
-
                     var builder = WebApplication.CreateBuilder();
                     builder.Services.AddSingleton<StatefulServiceContext>(serviceContext);
                     builder.WebHost
