@@ -51,10 +51,10 @@ Klijent komunicira sa backendom preko `Gateway` REST API-ja. `Gateway` je statel
 
 ## Baza podataka
 
-Podrazumijevane konekcije u `AuthService/appsettings.json` i `TripService/appsettings.json` koriste LocalDB:
+Podrazumijevane konekcije u `AuthService/appsettings.json` i `TripService/appsettings.json` koriste lokalni SQL Express:
 
 ```json
-Server=(localdb)\\MSSQLLocalDB;Database=TravelPlanner;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True
+Server=LEBRON\\SQLEXPRESS;Database=TravelPlanner;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True
 ```
 
 Prije pokretanja backend-a izvrsiti SQL migracije redom:
