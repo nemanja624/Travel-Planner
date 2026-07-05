@@ -1,6 +1,6 @@
 # Travel Planner
 
-Travel Planner je web aplikacija za planiranje putovanja. Sistem podrzava planove putovanja, destinacije, aktivnosti po danima, troskove i budzet, checklistu, autentikaciju, admin uloge i dijeljenje plana preko share linka/QR koda.
+Travel Planner je web aplikacija za planiranje putovanja. Sistem podrzava planove putovanja, destinacije, aktivnosti po danima, troskove i budzet, checklistu, autentikaciju, admin uloge i deljenje plana preko share linka/QR koda.
 
 ## Tehnologije
 
@@ -13,9 +13,9 @@ Travel Planner je web aplikacija za planiranje putovanja. Sistem podrzava planov
 
 | Komponenta | Tip | Uloga |
 | --- | --- | --- |
-| `Gateway` | Service Fabric stateless ASP.NET Core servis | Javni REST API, autentikacija zahtjeva, autorizacija, pozivi ka core servisima |
+| `Gateway` | Service Fabric stateless ASP.NET Core servis | Javni REST API, autentikacija zahteva, autorizacija, pozivi ka core servisima |
 | `AuthService` | Service Fabric stateful host servis | Interni HTTP servis za korisnike i autentikaciju |
-| `TripService` | Service Fabric stateful host servis | Interni HTTP servis za putovanja, planove, budzet i dijeljenje |
+| `TripService` | Service Fabric stateful host servis | Interni HTTP servis za putovanja, planove, budzet i deljenje |
 | `AuthService.Core` | Class library | Registracija, login, bcrypt hesiranje lozinki, JWT tokeni, admin logika |
 | `AuthService.Data` | Class library | `User` model i `AuthDbContext` |
 | `TripService.Core` | Class library | Poslovna logika za planove, destinacije, aktivnosti, troskove, checklistu i share linkove |
@@ -23,7 +23,7 @@ Travel Planner je web aplikacija za planiranje putovanja. Sistem podrzava planov
 | `Contracts` | Class library | DTO modeli i enum-i koje koriste backend slojevi |
 | `Client` | React + TypeScript + Vite | Frontend aplikacija |
 
-Klijent komunicira sa backendom preko `Gateway` REST API-ja. `Gateway` je stateless servis, dok su `AuthService` i `TripService` stateful Service Fabric servisi. Gateway prosljedjuje zahtjeve ka internim HTTP endpointima stateful servisa. DTO modeli su odvojeni od modela baze, a mapiranje se nalazi u data/core slojevima.
+Klijent komunicira sa backendom preko `Gateway` REST API-ja. `Gateway` je stateless servis, dok su `AuthService` i `TripService` stateful Service Fabric servisi. Gateway prosledjuje zahteve ka internim HTTP endpointima stateful servisa. DTO modeli su odvojeni od modela baze, a mapiranje se nalazi u data/core slojevima.
 
 ## Struktura projekta
 
@@ -41,13 +41,13 @@ Klijent komunicira sa backendom preko `Gateway` REST API-ja. `Gateway` je statel
 
 ## Baza podataka
 
-Podrazumijevane konekcije u `AuthService/appsettings.json` i `TripService/appsettings.json` koriste lokalni SQL Express:
+Podrazumevane konekcije u `AuthService/appsettings.json` i `TripService/appsettings.json` koriste lokalni SQL Express:
 
 ```json
 Server=LEBRON\\SQLEXPRESS;Database=TravelPlanner;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True
 ```
 
-Prije pokretanja backend-a izvrsiti SQL migracije redom:
+Pre pokretanja backend-a izvrsiti SQL migracije redom:
 
 1. `Database/Migrations/001_create_auth_schema.sql`
 2. `Database/Migrations/002_create_trip_schema.sql`
@@ -59,7 +59,7 @@ Treca skripta daje lokalnom Service Fabric nalogu (`NT AUTHORITY\NETWORK SERVICE
 
 ## Backend konfiguracija
 
-Konfiguracija je podijeljena po servisima:
+Konfiguracija je podeljena po servisima:
 
 Bitna podesavanja:
 
@@ -78,15 +78,15 @@ Za lokalni razvoj `ShareLinks:PublicBaseUrl` treba da pokazuje na frontend adres
 Backend se pokrece kroz Visual Studio kao Service Fabric aplikacija.
 
 1. Otvoriti `TravelPlanner.sln`.
-2. Provjeriti da je baza kreirana, da su migracije izvrsene i da je izvrsena skripta za lokalni Service Fabric SQL pristup.
-3. Provjeriti konekcione stringove u `Gateway/appsettings.json`.
+2. Proveriti da je baza kreirana, da su migracije izvrsene i da je izvrsena skripta za lokalni Service Fabric SQL pristup.
+3. Proveriti konekcione stringove u `Gateway/appsettings.json`.
 4. Pokrenuti Service Fabric aplikaciju iz Visual Studio-a.
 
 API Gateway je konfigurisan da frontend koristi adresu iz `.env` fajla.
 
-Napomena: za Service Fabric lokalni razvoj najcesce je potrebno da je lokalni klaster pokrenut i da se Visual Studio pokrene kao administrator.
+Napomena: za Service Fabric lokalni razvoj najcesce je potrebno da je lokalni cluster pokrenut i da se Visual Studio pokrene kao administrator.
 
-Za provjeru build-a:
+Za proveru build-a:
 
 ```bash
 dotnet build TravelPlanner.sln --no-restore
@@ -96,13 +96,13 @@ dotnet build TravelPlanner.sln --no-restore
 
 Frontend se nalazi u `Client`.
 
-Primjer konfiguracije je u `Client/.env.example`:
+Primer konfiguracije je u `Client/.env.example`:
 
 ```env
 VITE_API_BASE_URL=http://localhost:8922
 ```
 
-Za lokalni rad napraviti ili provjeriti `Client/.env.development` sa istom vrijednoscu ako Gateway radi na portu `8922`.
+Za lokalni rad napraviti ili proveriti `Client/.env.development` sa istom vrednoscu ako Gateway radi na portu `8922`.
 
 ## Pokretanje frontenda
 
@@ -113,13 +113,13 @@ npm install
 npm run dev
 ```
 
-Vite dev server se podrazumijevano pokrece na:
+Vite dev server se podrazumevano pokrece na:
 
 ```text
 http://localhost:3000
 ```
 
-Za provjeru produkcionog build-a:
+Za proveru produkcionog build-a:
 
 ```bash
 npm run build
@@ -130,24 +130,19 @@ npm run build
 - Registracija i logovanje korisnika
 - JWT autentikacija
 - Uloge `User` i `Admin`
-- Kreiranje, pregled, izmjena i brisanje planova putovanja
+- Kreiranje, pregled, izmena i brisanje planova putovanja
 - Destinacije po putovanju
 - Aktivnosti po danima
 - Troskovi i automatski pregled budzeta
 - Checklist / packing lista
-- Admin pregled korisnika, promjena uloge, aktiviranje/deaktiviranje naloga i administracija planova putovanja
-- Dijeljenje plana preko share linka i QR koda
+- Admin pregled korisnika, promena uloge, aktiviranje/deaktiviranje naloga i administracija planova putovanja
+- Deljenje plana preko share linka i QR koda
 - VIEW share pristup za pregled plana
-- EDIT share pristup za izmjenu osnovnih podataka plana
-
-## Dokumentacija za predaju
-
-- `Diagrams/architecture.md` - dijagram arhitekture sistema
-- `Diagrams/use-cases.md` - Use Case dijagram
+- EDIT share pristup za izmenu osnovnih podataka plana
 
 ## Napomene za testiranje
 
-Preporuceni redoslijed rucne provjere:
+Preporuceni redosled rucne provjere:
 
 1. Registracija novog korisnika.
 2. Logovanje korisnika.
@@ -160,7 +155,7 @@ Preporuceni redoslijed rucne provjere:
 
 ## Lokalni admin korisnik
 
-Registracija kroz aplikaciju kreira korisnika sa ulogom `User`. Za lokalno testiranje admin ekrana moze se registrovanom korisniku rucno promijeniti uloga u bazi:
+Registracija kroz aplikaciju kreira korisnika sa ulogom `User`. Za lokalno testiranje admin ekrana moze se registrovanom korisniku rucno promeniti uloga u bazi:
 
 ```sql
 UPDATE [dbo].[Users]
@@ -175,4 +170,4 @@ Nakon toga se treba ponovo ulogovati da bi novi JWT token imao admin ulogu.
 - `Client/.env.development` i `Client/.env.example` drze URL backend-a kroz `VITE_API_BASE_URL`.
 - `Gateway/appsettings.json` drzi konekcione stringove, JWT konfiguraciju i share link konfiguraciju.
 - `node_modules`, build output i lokalni fajlovi ne treba da se komituju.
-- `dotnet build TravelPlanner.sln` moze pokusati restore i citanje korisnickog NuGet config-a; za brzu lokalnu provjeru nakon restore-a moze se koristiti `dotnet build TravelPlanner.sln --no-restore`.
+- `dotnet build TravelPlanner.sln` moze pokusati restore i citanje korisnickog NuGet config-a; za brzu lokalnu proveru nakon restore-a moze se koristiti `dotnet build TravelPlanner.sln --no-restore`.
