@@ -9,16 +9,6 @@ Travel Planner je web aplikacija za planiranje putovanja. Sistem podrzava planov
 - Frontend: React, TypeScript, Vite
 - Autentikacija: JWT tokeni, bcrypt hesiranje lozinki
 
-## Preduslovi
-
-- Windows
-- Visual Studio sa Service Fabric alatima
-- Service Fabric SDK i lokalni klaster
-- .NET 8 SDK
-- Microsoft SQL Server LocalDB ili SQL Server
-- Node.js 18+
-- npm
-
 ## Arhitektura
 
 | Komponenta | Tip | Uloga |
