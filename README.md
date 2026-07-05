@@ -142,7 +142,7 @@ npm run build
 - Aktivnosti po danima
 - Troskovi i automatski pregled budzeta
 - Checklist / packing lista
-- Admin pregled korisnika, promjena uloge i aktiviranje/deaktiviranje naloga
+- Admin pregled korisnika, promjena uloge, aktiviranje/deaktiviranje naloga i administracija planova putovanja
 - Dijeljenje plana preko share linka i QR koda
 - VIEW share pristup za pregled plana
 - EDIT share pristup za izmjenu osnovnih podataka plana

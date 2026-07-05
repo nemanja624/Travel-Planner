@@ -638,6 +638,60 @@ input[type="checkbox"] {
   align-items: center;
 }
 
+.admin-tabs {
+  display: inline-grid;
+  grid-template-columns: repeat(2, minmax(120px, 1fr));
+  gap: 4px;
+  margin-bottom: 18px;
+  padding: 4px;
+  border: 1px solid #ccd5e4;
+  border-radius: 8px;
+  background: #f2f5f9;
+}
+
+.admin-tabs button {
+  min-height: 38px;
+  border: 0;
+  border-radius: 6px;
+  color: #516178;
+  background: transparent;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.admin-tabs .active {
+  color: #172033;
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgb(23 32 51 / 14%);
+}
+
+.admin-trip-row {
+  grid-template-columns: minmax(240px, 1fr) minmax(260px, auto) auto;
+  align-items: center;
+}
+
+.admin-trip-metrics {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.admin-trip-metrics div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.admin-trip-metrics dt {
+  color: #6a788c;
+}
+
+.admin-trip-metrics dd {
+  margin: 0;
+  font-weight: 800;
+}
+
 .admin-controls {
   display: flex;
   align-items: end;
@@ -653,7 +707,8 @@ input[type="checkbox"] {
 @media (max-width: 640px) {
   .inline-form,
   .checklist-item,
-  .user-row {
+  .user-row,
+  .admin-trip-row {
     grid-template-columns: 1fr;
   }
 

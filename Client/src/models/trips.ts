@@ -25,6 +25,18 @@ export interface TripSummary {
   remainingBudget: number;
 }
 
+export interface AdminTripSummary {
+  id: string;
+  ownerId: string;
+  title: string;
+  startDate: string;
+  endDate: string;
+  plannedBudget: number;
+  totalExpenses: number;
+  remainingBudget: number;
+  createdAtUtc: string;
+}
+
 export interface TripFormData {
   title: string;
   description: string;

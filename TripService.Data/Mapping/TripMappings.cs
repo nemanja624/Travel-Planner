@@ -40,6 +40,22 @@ public static class TripMappings
             trip.PlannedBudget - totalExpenses);
     }
 
+    public static AdminTripSummaryDto ToAdminSummaryDto(this Trip trip)
+    {
+        var totalExpenses = trip.Expenses.Sum(expense => expense.Amount);
+
+        return new AdminTripSummaryDto(
+            trip.Id,
+            trip.OwnerId,
+            trip.Title,
+            trip.StartDate,
+            trip.EndDate,
+            trip.PlannedBudget,
+            totalExpenses,
+            trip.PlannedBudget - totalExpenses,
+            trip.CreatedAtUtc);
+    }
+
     public static DestinationDto ToDto(this Destination destination)
     {
         return new DestinationDto(

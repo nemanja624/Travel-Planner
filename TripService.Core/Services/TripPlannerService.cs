@@ -28,6 +28,18 @@ public sealed class TripPlannerService : ITripPlannerService
         return trips.Select(trip => trip.ToSummaryDto()).ToList();
     }
 
+    public async Task<IReadOnlyCollection<AdminTripSummaryDto>> GetAllTripsAsync(CancellationToken cancellationToken = default)
+    {
+        var trips = await dbContext.Trips
+            .AsNoTracking()
+            .Include(trip => trip.Expenses)
+            .OrderByDescending(trip => trip.CreatedAtUtc)
+            .ThenBy(trip => trip.StartDate)
+            .ToListAsync(cancellationToken);
+
+        return trips.Select(trip => trip.ToAdminSummaryDto()).ToList();
+    }
+
     public async Task<ServiceResult<TripDto>> GetTripAsync(Guid ownerId, Guid tripId, CancellationToken cancellationToken = default)
     {
         var trip = await FindOwnedTrip(ownerId, tripId)
@@ -86,6 +98,22 @@ public sealed class TripPlannerService : ITripPlannerService
     {
         var trip = await FindOwnedTrip(ownerId, tripId)
             .FirstOrDefaultAsync(cancellationToken);
+
+        if (trip is null)
+        {
+            return ServiceResult.Failure("Trip was not found.");
+        }
+
+        dbContext.Trips.Remove(trip);
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        return ServiceResult.Success();
+    }
+
+    public async Task<ServiceResult> DeleteAnyTripAsync(Guid tripId, CancellationToken cancellationToken = default)
+    {
+        var trip = await dbContext.Trips
+            .FirstOrDefaultAsync(trip => trip.Id == tripId, cancellationToken);
 
         if (trip is null)
         {

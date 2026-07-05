@@ -7,6 +7,8 @@ public interface ITripPlannerService
 {
     Task<IReadOnlyCollection<TripSummaryDto>> GetTripsAsync(Guid ownerId, CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyCollection<AdminTripSummaryDto>> GetAllTripsAsync(CancellationToken cancellationToken = default);
+
     Task<ServiceResult<TripDto>> GetTripAsync(Guid ownerId, Guid tripId, CancellationToken cancellationToken = default);
 
     Task<ServiceResult<TripDto>> CreateTripAsync(Guid ownerId, CreateTripRequest request, CancellationToken cancellationToken = default);
@@ -14,6 +16,8 @@ public interface ITripPlannerService
     Task<ServiceResult<TripDto>> UpdateTripAsync(Guid ownerId, Guid tripId, UpdateTripRequest request, CancellationToken cancellationToken = default);
 
     Task<ServiceResult> DeleteTripAsync(Guid ownerId, Guid tripId, CancellationToken cancellationToken = default);
+
+    Task<ServiceResult> DeleteAnyTripAsync(Guid tripId, CancellationToken cancellationToken = default);
 
     Task<ServiceResult<IReadOnlyCollection<DestinationDto>>> GetDestinationsAsync(Guid ownerId, Guid tripId, CancellationToken cancellationToken = default);
 

@@ -17,6 +17,12 @@ public sealed class TripServiceHttpClient
     public Task<HttpResponseMessage> GetTripsAsync(Guid ownerId, CancellationToken cancellationToken) =>
         httpClient.GetAsync($"/internal/users/{ownerId}/trips", cancellationToken);
 
+    public Task<HttpResponseMessage> GetAdminTripsAsync(CancellationToken cancellationToken) =>
+        httpClient.GetAsync("/internal/admin/trips", cancellationToken);
+
+    public Task<HttpResponseMessage> DeleteAdminTripAsync(Guid tripId, CancellationToken cancellationToken) =>
+        httpClient.DeleteAsync($"/internal/admin/trips/{tripId}", cancellationToken);
+
     public Task<HttpResponseMessage> GetTripAsync(Guid ownerId, Guid tripId, CancellationToken cancellationToken) =>
         httpClient.GetAsync($"/internal/users/{ownerId}/trips/{tripId}", cancellationToken);
 

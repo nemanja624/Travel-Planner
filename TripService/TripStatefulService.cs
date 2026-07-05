@@ -47,6 +47,10 @@ internal sealed class TripStatefulService : StatefulService
 
                     app.MapGet("/internal/users/{ownerId:guid}/trips", async (Guid ownerId, ITripPlannerService service, CancellationToken ct) =>
                         Results.Ok(await service.GetTripsAsync(ownerId, ct)));
+                    app.MapGet("/internal/admin/trips", async (ITripPlannerService service, CancellationToken ct) =>
+                        Results.Ok(await service.GetAllTripsAsync(ct)));
+                    app.MapDelete("/internal/admin/trips/{tripId:guid}", async (Guid tripId, ITripPlannerService service, CancellationToken ct) =>
+                        ToResult(await service.DeleteAnyTripAsync(tripId, ct)));
                     app.MapGet("/internal/users/{ownerId:guid}/trips/{tripId:guid}", async (Guid ownerId, Guid tripId, ITripPlannerService service, CancellationToken ct) =>
                         ToResult(await service.GetTripAsync(ownerId, tripId, ct)));
                     app.MapPost("/internal/users/{ownerId:guid}/trips", async (Guid ownerId, CreateTripRequest request, ITripPlannerService service, CancellationToken ct) =>

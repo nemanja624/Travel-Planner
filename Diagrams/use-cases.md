@@ -16,6 +16,7 @@ flowchart LR
     ViewShared["Pregled podijeljenog plana"]
     EditShared["Izmjena podijeljenog plana"]
     AdminUsers["Administracija korisnickih naloga"]
+    AdminContent["Administracija sadrzaja sistema"]
 
     User --> Register
     User --> Login
@@ -29,6 +30,7 @@ flowchart LR
     User --> EditShared
     Admin --> Login
     Admin --> AdminUsers
+    Admin --> AdminContent
     Admin --> ManageTrips
 ```
 

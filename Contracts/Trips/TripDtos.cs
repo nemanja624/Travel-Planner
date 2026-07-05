@@ -25,6 +25,17 @@ public sealed record TripSummaryDto(
     decimal TotalExpenses,
     decimal RemainingBudget);
 
+public sealed record AdminTripSummaryDto(
+    Guid Id,
+    Guid OwnerId,
+    string Title,
+    DateOnly StartDate,
+    DateOnly EndDate,
+    decimal PlannedBudget,
+    decimal TotalExpenses,
+    decimal RemainingBudget,
+    DateTime CreatedAtUtc);
+
 public sealed record CreateTripRequest(
     [Required, MaxLength(120)] string Title,
     [MaxLength(1000)] string Description,
