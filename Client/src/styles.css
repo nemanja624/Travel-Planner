@@ -411,6 +411,109 @@ input[type="checkbox"] {
   gap: 18px;
 }
 
+.activity-calendar {
+  display: grid;
+  gap: 12px;
+  border: 1px solid #d8deea;
+  border-radius: 8px;
+  padding: 14px;
+  background: #fbfcfe;
+}
+
+.calendar-toolbar {
+  display: grid;
+  grid-template-columns: auto minmax(160px, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.calendar-toolbar h3 {
+  margin: 0;
+  color: #172033;
+  font-size: 18px;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(92px, 1fr));
+  gap: 1px;
+  overflow-x: auto;
+  border: 1px solid #d8deea;
+  border-radius: 8px;
+  background: #d8deea;
+}
+
+.calendar-weekday,
+.calendar-cell {
+  min-width: 92px;
+  background: #ffffff;
+}
+
+.calendar-weekday {
+  padding: 9px;
+  color: #526075;
+  font-size: 13px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.calendar-cell {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 8px;
+  min-height: 116px;
+  padding: 8px;
+}
+
+.calendar-cell.muted {
+  background: #f4f6fa;
+}
+
+.calendar-cell.has-activities {
+  box-shadow: inset 0 3px 0 #256f7a;
+}
+
+.calendar-date {
+  color: #172033;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.calendar-cell.muted .calendar-date {
+  color: #8a96a8;
+}
+
+.calendar-events {
+  display: grid;
+  align-content: start;
+  gap: 5px;
+}
+
+.calendar-event {
+  min-width: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 6px;
+  padding: 5px 7px;
+  color: #1f5d66;
+  background: #e4f1f3;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.calendar-more {
+  color: #526075;
+  font-size: 12px;
+  font-weight: 800;
+}
+
 .calendar-day {
   display: grid;
   gap: 10px;
@@ -564,5 +667,9 @@ input[type="checkbox"] {
   .page-actions {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .calendar-toolbar {
+    grid-template-columns: 1fr;
   }
 }

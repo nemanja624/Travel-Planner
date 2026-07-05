@@ -24,10 +24,13 @@ const statusLabels: Record<ActivityStatus, string> = {
   [ActivityStatus.Cancelled]: "Otkazano"
 };
 
+const weekDays = ["Pon", "Uto", "Sri", "Cet", "Pet", "Sub", "Ned"];
+
 export function ActivitiesSection({ tripId }: ActivitiesSectionProps) {
   const { tripService } = useServices();
   const [activities, setActivities] = useState<TripActivity[]>([]);
   const [form, setForm] = useState<ActivityFormData>(initialForm);
+  const [visibleMonth, setVisibleMonth] = useState(() => getCurrentMonthValue());
   const [editingActivityId, setEditingActivityId] = useState<string | null>(null);
   const [deletingActivityId, setDeletingActivityId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -62,6 +65,8 @@ export function ActivitiesSection({ tripId }: ActivitiesSectionProps) {
   }, [tripId, tripService]);
 
   const activityGroups = useMemo(() => groupActivitiesByDate(activities), [activities]);
+  const calendarDays = useMemo(() => buildCalendarDays(visibleMonth, activities), [activities, visibleMonth]);
+  const visibleMonthLabel = useMemo(() => formatMonthLabel(visibleMonth), [visibleMonth]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -86,6 +91,7 @@ export function ActivitiesSection({ tripId }: ActivitiesSectionProps) {
         setActivities((currentActivities) => [...currentActivities, activity]);
       }
 
+      setVisibleMonth(form.date.slice(0, 7));
       setForm(initialForm);
     } catch (caughtError) {
       setError(caughtError instanceof ApiError ? caughtError.message : "Aktivnost nije sacuvana.");
@@ -210,6 +216,59 @@ export function ActivitiesSection({ tripId }: ActivitiesSectionProps) {
       </form>
 
       {activities.length === 0 && !isLoading && <p className="state-message">Nema aktivnosti.</p>}
+      <section className="activity-calendar" aria-label="Kalendar aktivnosti">
+        <header className="calendar-toolbar">
+          <button
+            className="secondary-button compact"
+            type="button"
+            onClick={() => setVisibleMonth(shiftMonth(visibleMonth, -1))}
+          >
+            Prethodni
+          </button>
+          <h3>{visibleMonthLabel}</h3>
+          <button
+            className="secondary-button compact"
+            type="button"
+            onClick={() => setVisibleMonth(shiftMonth(visibleMonth, 1))}
+          >
+            Sljedeci
+          </button>
+        </header>
+
+        <div className="calendar-grid">
+          {weekDays.map((day) => (
+            <div className="calendar-weekday" key={day}>
+              {day}
+            </div>
+          ))}
+          {calendarDays.map((day) => (
+            <article
+              className={`calendar-cell${day.isCurrentMonth ? "" : " muted"}${day.activities.length > 0 ? " has-activities" : ""}`}
+              key={day.date}
+            >
+              <span className="calendar-date">{day.dayNumber}</span>
+              <div className="calendar-events">
+                {day.activities.slice(0, 3).map((activity) => (
+                  <button
+                    className="calendar-event"
+                    key={activity.id}
+                    title={`${activity.title} - ${activity.location || "Bez lokacije"}`}
+                    type="button"
+                    onClick={() => startEditing(activity)}
+                  >
+                    {activity.time ? `${toTimeInputValue(activity.time)} ` : ""}
+                    {activity.title}
+                  </button>
+                ))}
+                {day.activities.length > 3 && (
+                  <span className="calendar-more">+{day.activities.length - 3}</span>
+                )}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
       <div className="calendar-list">
         {activityGroups.map((group) => (
           <section className="calendar-day" key={group.date}>
@@ -267,6 +326,35 @@ function validateActivity(form: ActivityFormData) {
   return null;
 }
 
+function buildCalendarDays(monthValue: string, activities: TripActivity[]) {
+  const [year, month] = monthValue.split("-").map(Number);
+  const monthIndex = month - 1;
+  const firstDay = new Date(year, monthIndex, 1);
+  const mondayOffset = (firstDay.getDay() + 6) % 7;
+  const cursor = new Date(year, monthIndex, 1 - mondayOffset);
+  const activitiesByDate = new Map<string, TripActivity[]>();
+
+  [...activities]
+    .sort((first, second) => `${first.date} ${first.time}`.localeCompare(`${second.date} ${second.time}`))
+    .forEach((activity) => {
+      const date = toDateInputValue(activity.date);
+      activitiesByDate.set(date, [...(activitiesByDate.get(date) ?? []), activity]);
+    });
+
+  return Array.from({ length: 42 }, (_, index) => {
+    const date = new Date(cursor);
+    date.setDate(cursor.getDate() + index);
+    const dateValue = toDateInputValueFromDate(date);
+
+    return {
+      date: dateValue,
+      dayNumber: date.getDate(),
+      isCurrentMonth: date.getMonth() === monthIndex,
+      activities: activitiesByDate.get(dateValue) ?? []
+    };
+  });
+}
+
 function groupActivitiesByDate(activities: TripActivity[]) {
   const groups = new Map<string, TripActivity[]>();
 
@@ -281,6 +369,25 @@ function groupActivitiesByDate(activities: TripActivity[]) {
     date,
     activities: groupActivities
   }));
+}
+
+function getCurrentMonthValue() {
+  const now = new Date();
+  return `${now.getFullYear()}-${padDatePart(now.getMonth() + 1)}`;
+}
+
+function shiftMonth(monthValue: string, offset: number) {
+  const [year, month] = monthValue.split("-").map(Number);
+  const date = new Date(year, month - 1 + offset, 1);
+  return `${date.getFullYear()}-${padDatePart(date.getMonth() + 1)}`;
+}
+
+function formatMonthLabel(monthValue: string) {
+  const [year, month] = monthValue.split("-").map(Number);
+  return new Intl.DateTimeFormat("sr-Latn-BA", {
+    month: "long",
+    year: "numeric"
+  }).format(new Date(year, month - 1, 1));
 }
 
 function formatDate(value: string) {
@@ -303,6 +410,14 @@ function toDateInputValue(value: string) {
   return value.slice(0, 10);
 }
 
+function toDateInputValueFromDate(value: Date) {
+  return `${value.getFullYear()}-${padDatePart(value.getMonth() + 1)}-${padDatePart(value.getDate())}`;
+}
+
 function toTimeInputValue(value: string) {
   return value.slice(0, 5);
+}
+
+function padDatePart(value: number) {
+  return value.toString().padStart(2, "0");
 }
