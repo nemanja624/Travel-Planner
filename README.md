@@ -61,8 +61,11 @@ Prije pokretanja backend-a izvrsiti SQL migracije redom:
 
 1. `Database/Migrations/001_create_auth_schema.sql`
 2. `Database/Migrations/002_create_trip_schema.sql`
+3. `Database/Migrations/000_grant_local_service_fabric_access.sql`
 
 Migracije kreiraju tabele za korisnike, putovanja, destinacije, aktivnosti, troskove, checklistu i share linkove.
+
+Treca skripta daje lokalnom Service Fabric nalogu (`NT AUTHORITY\NETWORK SERVICE`) pravo da cita i upisuje podatke u bazu. Bez toga registracija i ostali pozivi koji koriste bazu mogu vratiti `500`, iako su servisi pokrenuti.
 
 ## Backend konfiguracija
 
@@ -85,7 +88,7 @@ Za lokalni razvoj `ShareLinks:PublicBaseUrl` treba da pokazuje na frontend adres
 Backend se pokrece kroz Visual Studio kao Service Fabric aplikacija.
 
 1. Otvoriti `TravelPlanner.sln`.
-2. Provjeriti da je baza kreirana i da su migracije izvrsene.
+2. Provjeriti da je baza kreirana, da su migracije izvrsene i da je izvrsena skripta za lokalni Service Fabric SQL pristup.
 3. Provjeriti konekcione stringove u `Gateway/appsettings.json`.
 4. Pokrenuti Service Fabric aplikaciju iz Visual Studio-a.
 
