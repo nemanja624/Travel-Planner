@@ -319,6 +319,10 @@ function validateActivity(form: ActivityFormData) {
     return "Datum aktivnosti je obavezan.";
   }
 
+  if (!form.time) {
+    return "Vrijeme aktivnosti je obavezno.";
+  }
+
   if (form.estimatedCost < 0) {
     return "Procijenjeni trosak ne moze biti negativan.";
   }

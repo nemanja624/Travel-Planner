@@ -1,6 +1,6 @@
 :root {
   color: #172033;
-  background: #f6f7fb;
+  background: #eef2f7;
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
@@ -16,17 +16,18 @@ body {
 
 .app-shell {
   min-height: 100vh;
-  padding: 32px;
+  padding: 18px;
 }
 
 .workspace {
   display: grid;
   min-height: calc(100vh - 64px);
-  place-items: center;
-  padding: 24px;
+  place-items: start center;
+  padding: 22px;
   border: 1px solid #d8deea;
   border-radius: 8px;
-  background: #ffffff;
+  background:
+    linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
 }
 
 .intro-panel {
@@ -122,7 +123,7 @@ select {
 }
 
 textarea {
-  min-height: 86px;
+  min-height: 72px;
   padding: 10px 12px;
   resize: vertical;
 }
@@ -135,7 +136,8 @@ input[type="checkbox"] {
 
 .primary-button {
   color: #ffffff;
-  background: #256f7a;
+  background: #176b7a;
+  box-shadow: 0 8px 18px rgb(23 107 122 / 18%);
 }
 
 .primary-button:disabled {
@@ -146,8 +148,8 @@ input[type="checkbox"] {
 .secondary-button {
   margin-top: 24px;
   padding: 0 16px;
-  color: #1f5d66;
-  background: #e4f1f3;
+  color: #24515a;
+  background: #e7f3f5;
 }
 
 .secondary-button.compact {
@@ -184,7 +186,7 @@ input[type="checkbox"] {
 }
 
 .page-panel {
-  width: min(100%, 1120px);
+  width: min(100%, 1320px);
 }
 
 .page-header {
@@ -192,7 +194,9 @@ input[type="checkbox"] {
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 28px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid #d8deea;
+  padding-bottom: 18px;
 }
 
 .page-actions {
@@ -209,11 +213,11 @@ input[type="checkbox"] {
 }
 
 .form-section {
-  margin-bottom: 28px;
   border: 1px solid #d8deea;
   border-radius: 8px;
-  padding: 18px;
-  background: #fbfcfe;
+  padding: 16px;
+  background: #ffffff;
+  box-shadow: 0 12px 30px rgb(23 32 51 / 7%);
 }
 
 .form-section h2 {
@@ -223,7 +227,7 @@ input[type="checkbox"] {
 
 .trip-form {
   display: grid;
-  gap: 14px;
+  gap: 12px;
 }
 
 .form-actions,
@@ -235,8 +239,8 @@ input[type="checkbox"] {
 
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
 }
 
 .inline-form {
@@ -248,16 +252,17 @@ input[type="checkbox"] {
 
 .trip-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
+  gap: 12px;
 }
 
 .trip-card {
-  min-height: 190px;
+  min-height: 176px;
   border: 1px solid #d8deea;
   border-radius: 8px;
-  padding: 18px;
+  padding: 16px;
   background: #ffffff;
+  box-shadow: 0 10px 24px rgb(23 32 51 / 6%);
 }
 
 .trip-card h2 {
@@ -293,28 +298,111 @@ input[type="checkbox"] {
   font-weight: 800;
 }
 
-.details-panel {
-  margin-top: 24px;
+.planner-dashboard {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.42fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.planner-form {
+  position: sticky;
+  top: 18px;
+}
+
+.planner-form textarea {
+  min-height: 62px;
+}
+
+.trip-board {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.board-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   border: 1px solid #d8deea;
   border-radius: 8px;
-  padding: 22px;
+  padding: 14px 16px;
   background: #ffffff;
 }
 
+.board-header h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.board-header p {
+  margin: 4px 0 0;
+  color: #5c6b82;
+  font-weight: 700;
+}
+
+.details-panel {
+  margin-top: 16px;
+  border: 1px solid #d8deea;
+  border-radius: 8px;
+  padding: 18px;
+  background: #ffffff;
+  box-shadow: 0 16px 36px rgb(23 32 51 / 8%);
+}
+
 .details-header {
-  margin-bottom: 22px;
+  margin-bottom: 16px;
+}
+
+.trip-hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  border-radius: 8px;
+  padding: 18px;
+  color: #ffffff;
+  background:
+    linear-gradient(135deg, rgb(23 107 122 / 92%), rgb(43 64 88 / 94%)),
+    #176b7a;
+}
+
+.trip-hero .eyebrow,
+.trip-hero .summary {
+  color: rgb(255 255 255 / 78%);
+}
+
+.hero-budget {
+  display: grid;
+  min-width: 190px;
+  gap: 6px;
+  border: 1px solid rgb(255 255 255 / 24%);
+  border-radius: 8px;
+  padding: 14px;
+  background: rgb(255 255 255 / 11%);
+}
+
+.hero-budget span {
+  color: rgb(255 255 255 / 76%);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.hero-budget strong {
+  font-size: 24px;
 }
 
 .details-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 16px;
+  grid-template-columns: 1.3fr 1fr 1fr;
+  gap: 12px;
 }
 
 .details-grid section {
   border: 1px solid #e1e6ef;
   border-radius: 8px;
-  padding: 16px;
+  padding: 14px;
   background: #fbfcfe;
 }
 
@@ -350,12 +438,56 @@ input[type="checkbox"] {
   font-weight: 800;
 }
 
+.compact-overview {
+  margin-bottom: 14px;
+}
+
+.compact-overview section {
+  min-height: 118px;
+}
+
+.detail-tabs {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(100px, 1fr));
+  gap: 6px;
+  margin: 0 0 14px;
+  padding: 6px;
+  border: 1px solid #d8deea;
+  border-radius: 8px;
+  background: #f2f5f9;
+}
+
+.detail-tabs button {
+  min-height: 40px;
+  border: 0;
+  border-radius: 6px;
+  color: #516178;
+  background: transparent;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.detail-tabs .active {
+  color: #172033;
+  background: #ffffff;
+  box-shadow: 0 1px 5px rgb(23 32 51 / 14%);
+}
+
+.detail-workspace {
+  min-width: 0;
+  border: 1px solid #d8deea;
+  border-radius: 8px;
+  padding: 16px;
+  background: #ffffff;
+}
+
 .management-section {
   display: grid;
-  gap: 16px;
-  margin-top: 24px;
-  border-top: 1px solid #d8deea;
-  padding-top: 22px;
+  gap: 14px;
+  margin-top: 0;
+  border-top: 0;
+  padding-top: 0;
 }
 
 .section-header {
@@ -383,10 +515,10 @@ input[type="checkbox"] {
 
 .list-item {
   display: grid;
-  gap: 10px;
+  gap: 8px;
   border: 1px solid #e1e6ef;
   border-radius: 8px;
-  padding: 14px;
+  padding: 12px;
   background: #fbfcfe;
 }
 
@@ -408,7 +540,8 @@ input[type="checkbox"] {
 
 .calendar-list {
   display: grid;
-  gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
 }
 
 .activity-calendar {
@@ -416,7 +549,7 @@ input[type="checkbox"] {
   gap: 12px;
   border: 1px solid #d8deea;
   border-radius: 8px;
-  padding: 14px;
+  padding: 12px;
   background: #fbfcfe;
 }
 
@@ -437,7 +570,7 @@ input[type="checkbox"] {
 
 .calendar-grid {
   display: grid;
-  grid-template-columns: repeat(7, minmax(92px, 1fr));
+  grid-template-columns: repeat(7, minmax(76px, 1fr));
   gap: 1px;
   overflow-x: auto;
   border: 1px solid #d8deea;
@@ -447,7 +580,7 @@ input[type="checkbox"] {
 
 .calendar-weekday,
 .calendar-cell {
-  min-width: 92px;
+  min-width: 76px;
   background: #ffffff;
 }
 
@@ -462,9 +595,9 @@ input[type="checkbox"] {
 .calendar-cell {
   display: grid;
   grid-template-rows: auto 1fr;
-  gap: 8px;
-  min-height: 116px;
-  padding: 8px;
+  gap: 6px;
+  min-height: 92px;
+  padding: 7px;
 }
 
 .calendar-cell.muted {
@@ -472,7 +605,7 @@ input[type="checkbox"] {
 }
 
 .calendar-cell.has-activities {
-  box-shadow: inset 0 3px 0 #256f7a;
+  box-shadow: inset 0 3px 0 #176b7a;
 }
 
 .calendar-date {
@@ -497,7 +630,7 @@ input[type="checkbox"] {
   border: 0;
   border-radius: 6px;
   padding: 5px 7px;
-  color: #1f5d66;
+  color: #24515a;
   background: #e4f1f3;
   font: inherit;
   font-size: 12px;
@@ -535,7 +668,7 @@ input[type="checkbox"] {
 .status-pill {
   border-radius: 999px;
   padding: 5px 10px;
-  color: #1f5d66;
+  color: #24515a;
   background: #e4f1f3;
   font-size: 13px;
   font-weight: 800;
@@ -545,7 +678,7 @@ input[type="checkbox"] {
 .budget-summary {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
+  gap: 10px;
 }
 
 .budget-summary div {
@@ -553,7 +686,7 @@ input[type="checkbox"] {
   gap: 6px;
   border: 1px solid #e1e6ef;
   border-radius: 8px;
-  padding: 14px;
+  padding: 12px;
   background: #fbfcfe;
 }
 
@@ -704,7 +837,39 @@ input[type="checkbox"] {
   min-width: 160px;
 }
 
+@media (max-width: 980px) {
+  .planner-dashboard,
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .planner-form {
+    position: static;
+  }
+
+  .detail-tabs {
+    grid-template-columns: repeat(3, minmax(110px, 1fr));
+  }
+
+  .trip-hero {
+    flex-direction: column;
+  }
+
+  .hero-budget {
+    width: 100%;
+  }
+}
+
 @media (max-width: 640px) {
+  .app-shell {
+    padding: 10px;
+  }
+
+  .workspace {
+    min-height: calc(100vh - 20px);
+    padding: 14px;
+  }
+
   .inline-form,
   .checklist-item,
   .user-row,
@@ -726,5 +891,15 @@ input[type="checkbox"] {
 
   .calendar-toolbar {
     grid-template-columns: 1fr;
+  }
+
+  .detail-tabs {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .detail-workspace,
+  .details-panel,
+  .trip-hero {
+    padding: 12px;
   }
 }

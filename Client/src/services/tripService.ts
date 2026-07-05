@@ -56,11 +56,17 @@ export const tripService = {
   },
 
   createActivity(tripId: string, request: ActivityFormData): Promise<TripActivity> {
-    return apiClient.post<TripActivity, ActivityFormData>(`/api/trips/${tripId}/activities`, request);
+    return apiClient.post<TripActivity, ActivityFormData>(
+      `/api/trips/${tripId}/activities`,
+      normalizeActivityRequest(request)
+    );
   },
 
   updateActivity(tripId: string, activityId: string, request: ActivityFormData): Promise<TripActivity> {
-    return apiClient.put<TripActivity, ActivityFormData>(`/api/trips/${tripId}/activities/${activityId}`, request);
+    return apiClient.put<TripActivity, ActivityFormData>(
+      `/api/trips/${tripId}/activities/${activityId}`,
+      normalizeActivityRequest(request)
+    );
   },
 
   deleteActivity(tripId: string, activityId: string): Promise<void> {
@@ -109,3 +115,10 @@ export const tripService = {
     return apiClient.delete(`/api/trips/${tripId}/checklist-items/${itemId}`);
   }
 };
+
+function normalizeActivityRequest(request: ActivityFormData): ActivityFormData {
+  return {
+    ...request,
+    time: request.time.length === 5 ? `${request.time}:00` : request.time
+  };
+}

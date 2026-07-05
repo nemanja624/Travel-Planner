@@ -109,67 +109,78 @@ export function TripListPage({ userEmail, canAdminister, onLogout, onOpenAdmin, 
         </div>
       </header>
 
-      <section className="form-section">
-        <h2>{editingTrip ? "Izmjena plana putovanja" : "Novi plan putovanja"}</h2>
-        <TripForm
-          initialData={editingTrip ? toTripFormData(editingTrip) : undefined}
-          submitLabel={editingTrip ? "Sacuvaj izmjene" : "Dodaj plan"}
-          tripId={editingTrip?.id}
-          onCancel={editingTrip ? () => setEditingTrip(null) : undefined}
-          onSaved={handleTripSaved}
-        />
-      </section>
+      <div className="planner-dashboard">
+        <aside className="form-section planner-form">
+          <h2>{editingTrip ? "Izmjena plana putovanja" : "Novi plan putovanja"}</h2>
+          <TripForm
+            initialData={editingTrip ? toTripFormData(editingTrip) : undefined}
+            submitLabel={editingTrip ? "Sacuvaj izmjene" : "Dodaj plan"}
+            tripId={editingTrip?.id}
+            onCancel={editingTrip ? () => setEditingTrip(null) : undefined}
+            onSaved={handleTripSaved}
+          />
+        </aside>
 
-      {isLoading && <p className="state-message">Ucitavanje planova...</p>}
-      {error && <p className="form-error">{error}</p>}
-      {!isLoading && !error && trips.length === 0 && (
-        <p className="state-message">Jos nema kreiranih planova putovanja.</p>
-      )}
-
-      <div className="trip-grid">
-        {trips.map((trip) => (
-          <article className="trip-card" key={trip.id}>
-            <h2>{trip.title}</h2>
-            <p>
-              {formatDate(trip.startDate)} - {formatDate(trip.endDate)}
-            </p>
-            <dl>
-              <div>
-                <dt>Budzet</dt>
-                <dd>{formatCurrency(trip.plannedBudget)}</dd>
-              </div>
-              <div>
-                <dt>Troskovi</dt>
-                <dd>{formatCurrency(trip.totalExpenses)}</dd>
-              </div>
-              <div>
-                <dt>Preostalo</dt>
-                <dd>{formatCurrency(trip.remainingBudget)}</dd>
-              </div>
-            </dl>
-            <div className="item-actions">
-              <button className="secondary-button compact" type="button" onClick={() => onOpenTrip(trip.id)}>
-                Otvori detalje
-              </button>
-              <button
-                className="secondary-button compact"
-                disabled={editingTripId === trip.id}
-                type="button"
-                onClick={() => startEditing(trip.id)}
-              >
-                {editingTripId === trip.id ? "Ucitavanje..." : "Uredi"}
-              </button>
-              <button
-                className="danger-button"
-                disabled={deletingTripId === trip.id}
-                type="button"
-                onClick={() => deleteTrip(trip.id)}
-              >
-                {deletingTripId === trip.id ? "Brisanje..." : "Obrisi"}
-              </button>
+        <main className="trip-board">
+          <div className="board-header">
+            <div>
+              <h2>Planovi putovanja</h2>
+              <p>{trips.length} aktivnih planova</p>
             </div>
-          </article>
-        ))}
+          </div>
+
+          {isLoading && <p className="state-message">Ucitavanje planova...</p>}
+          {error && <p className="form-error">{error}</p>}
+          {!isLoading && !error && trips.length === 0 && (
+            <p className="state-message">Jos nema kreiranih planova putovanja.</p>
+          )}
+
+          <div className="trip-grid">
+            {trips.map((trip) => (
+              <article className="trip-card" key={trip.id}>
+                <h2>{trip.title}</h2>
+                <p>
+                  {formatDate(trip.startDate)} - {formatDate(trip.endDate)}
+                </p>
+                <dl>
+                  <div>
+                    <dt>Budzet</dt>
+                    <dd>{formatCurrency(trip.plannedBudget)}</dd>
+                  </div>
+                  <div>
+                    <dt>Troskovi</dt>
+                    <dd>{formatCurrency(trip.totalExpenses)}</dd>
+                  </div>
+                  <div>
+                    <dt>Preostalo</dt>
+                    <dd>{formatCurrency(trip.remainingBudget)}</dd>
+                  </div>
+                </dl>
+                <div className="item-actions">
+                  <button className="secondary-button compact" type="button" onClick={() => onOpenTrip(trip.id)}>
+                    Otvori detalje
+                  </button>
+                  <button
+                    className="secondary-button compact"
+                    disabled={editingTripId === trip.id}
+                    type="button"
+                    onClick={() => startEditing(trip.id)}
+                  >
+                    {editingTripId === trip.id ? "Ucitavanje..." : "Uredi"}
+                  </button>
+                  <button
+                    className="danger-button"
+                    disabled={deletingTripId === trip.id}
+                    type="button"
+                    onClick={() => deleteTrip(trip.id)}
+                  >
+                    {deletingTripId === trip.id ? "Brisanje..." : "Obrisi"}
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
+        </main>
       </div>
     </section>
   );
